@@ -10,7 +10,12 @@ ARG PHP_VERSION=8.3
 
 # Default Environment Variables
 ENV PHP_VERSIONS_AVAILABLE="8.1 8.2 8.3" \
-    PHP_VERSION=${PHP_VERSION}
+    PHP_VERSION=${PHP_VERSION} \
+    DEBIAN_FRONTEND=noninteractive \
+    GPG_TTY=/dev/null
+
+# Switch to root user for installation and configuration
+USER root
 
 # Install PHP, Node.js, NGINX, and related dependencies
 RUN apt-get update && \
@@ -39,29 +44,32 @@ RUN apt-get update && \
     php${PHP_VERSION}-curl \
     php${PHP_VERSION}-memcached \
     php${PHP_VERSION}-xml \
-    php${PHP_VERSION}-zip && \
-    curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg && \
+    php${PHP_VERSION}-zip
+
+# Remove any existing GPG key file and download the NodeSource key
+RUN rm -f /etc/apt/keyrings/nodesource.gpg && \
+    curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --batch --no-tty --dearmor -o /etc/apt/keyrings/nodesource.gpg && \
     echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_${NODE_MAJOR}.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list && \
     apt-get update && \
     apt-get install -y --no-install-recommends nodejs && \
     npm install -g pm2 && \
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# Copy application code to /var/www/html
-COPY ./src/ /var/www/html/
+# Ensure correct permissions for the web directory during build
+RUN mkdir -p /var/www/html && chown -R www-data:www-data /var/www/html
 
 # Copy the entrypoint script to /usr/local/bin
-COPY ./bin/wpcloud.site.entrypoint.sh /usr/local/bin/wpcloud.site.entrypoint.sh
+COPY ./bin/entrypoint.sh /usr/local/bin/entrypoint.sh
 
 # Ensure the entrypoint script is executable
-RUN chmod +x /usr/local/bin/wpcloud.site.entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
-# Set ownership and permissions for the web application directory
-RUN chown -R www-data:www-data /var/www/html
+# Switch back to non-root user for runtime
+USER ${USER}
 
 # Set volumes and working directory
 VOLUME [ "/var/www", "/home/${USER}" ]
 WORKDIR /var/www/html
 
 # Use the entrypoint script
-CMD ["/usr/local/bin/wpcloud.site.entrypoint.sh"]
+CMD ["/usr/local/bin/entrypoint.sh"]
