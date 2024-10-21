@@ -47,23 +47,21 @@ RUN apt-get update && \
     npm install -g pm2 && \
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# Copy ecosystem.config.js to /usr/lib
-COPY ./etc/home/ecosystem.config.js /usr/lib/ecosystem.config.js
+# Copy application code to /var/www/html
+COPY ./src/ /var/www/html/
 
-# Create necessary directories and set permissions
-RUN mkdir -p /var/run/wpcloud.site /var/log/wpcloud.site/nginx/logs && \
-    chown -R root:root /var/run/wpcloud.site /var/log/wpcloud.site/nginx/logs
+# Copy the entrypoint script to /usr/local/bin
+COPY ./bin/wpcloud.site.entrypoint.sh /usr/local/bin/wpcloud.site.entrypoint.sh
+
+# Ensure the entrypoint script is executable
+RUN chmod +x /usr/local/bin/wpcloud.site.entrypoint.sh
+
+# Set ownership and permissions for the web application directory
+RUN chown -R www-data:www-data /var/www/html
 
 # Set volumes and working directory
 VOLUME [ "/var/www", "/home/${USER}" ]
-WORKDIR /var/www
+WORKDIR /var/www/html
 
-# Healthcheck
-HEALTHCHECK --interval=30s --timeout=10s --retries=3 \
-  CMD curl -f http://localhost || exit 1
-
-# Switch to non-root user after privileged tasks
-USER ${USER}
-
-# Use the entrypoint script from the base image
-CMD ["/bin/bash", "/opt/sources/wpCloud/docker-site/bin/wpcloud.site.entrypoint.sh"]
+# Use the entrypoint script
+CMD ["/usr/local/bin/wpcloud.site.entrypoint.sh"]
