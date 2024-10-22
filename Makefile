@@ -5,7 +5,7 @@ include Makefile.help
 # Default target
 .DEFAULT_GOAL := help
 
-.PHONY: run run-it clean build exec log test dev-pipeline
+.PHONY: run run-it clean build exec log test dev-pipeline run-with-volume
 
 # Build the Docker image
 MULTIPLATFORM ?= false
@@ -31,6 +31,12 @@ run: clean
 # Run Docker container in interactive mode
 run-it:
 	@$(MAKE) run INTERACTIVE=true
+
+# Run Docker container with port mapping and volume mount
+run-with-volume: clean
+	@echo "Running Docker container with port mapping and volume mount..."
+	@docker run -d -p 8080:80 -v $(CURDIR)/src:/var/www/html --name $(CONTAINER_NAME) $(DOCKER_IMAGE)
+	@echo "Docker container is running with port 8080 mapped and volume mounted."
 
 # Exec into the running container
 exec:

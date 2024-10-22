@@ -1,42 +1,41 @@
 #!/bin/bash
-############################################################
-## UDX Docker Site Entrypoint Script
-############################################################
 
 set -e  # Exit immediately if a command exits with a non-zero status
 
-# Clean up old PID files
-rm -f /var/run/{memcached.pid,nginx.pid}
-[ -d /var/run/php ] && rm -f /var/run/php/php*.pid
+# Graceful shutdown handling
+trap 'echo "Received termination signal, shutting down..."; exit 0;' SIGTERM SIGINT
 
-# Set environment variables if not set
-[[ -z "$CI_RABBIT_NAME" && -n "$HOSTNAME" ]] && export CI_RABBIT_NAME="${HOSTNAME:-default_rabbit_name}"
-[[ -z "$CI_RABBIT_DOMAIN" && -n "$CI_RABBIT_ID" ]] && export CI_RABBIT_DOMAIN="${CI_RABBIT_ID:-default_rabbit_domain}"
-[[ -z "$NEW_RELIC_APP_NAME" && -n "$CI_RABBIT_ID" ]] && export NEW_RELIC_APP_NAME="${CI_RABBIT_ID:-default_app_name}"
+# Clean up old PID files
+echo " * Cleaning up old PID files..."
+rm -f /var/run/nginx.pid /run/php/php*.pid
 
 echo " * Starting UDX site version [${DOCKER_IMAGE_VERSION}]."
 
-# Check if a Git repository and token are provided
-if [[ -z "$GIT_REPO_URL" || -z "$GIT_TOKEN" ]]; then
-    echo "No Git repository or token provided. Skipping code pull."
+# Start PHP-FPM and check if it started correctly
+echo " * Starting PHP-FPM..."
+if service php${PHP_VERSION}-fpm start; then
+    echo " * PHP-FPM started."
 else
-    echo "Cloning repository from $GIT_REPO_URL."
-    git clone https://"$GIT_TOKEN"@"$GIT_REPO_URL" /var/www/html || {
-        echo "Git clone failed"
-        exit 1
-    }
+    echo "Error: PHP-FPM failed to start."
+    service php${PHP_VERSION}-fpm status
+    exit 1
 fi
 
-# Start NGINX with default configuration
-echo " * Starting NGINX with default configuration."
-nginx -g 'daemon off;' &
+# Wait a moment to ensure PHP-FPM initializes
+sleep 3
 
-# Start PM2 Daemon
-echo " * Starting PM2 Daemon."
-pm2 startOrReload ${PROCESS_FILE:-default_process.json} --only daemon --silent --no-vizion || {
-    echo "Error: PM2 failed to start."
+# Check if PHP-FPM socket exists
+if [ ! -S /run/php/php${PHP_VERSION}-fpm.sock ]; then
+    echo "Error: No PHP-FPM socket found at /run/php/php${PHP_VERSION}-fpm.sock."
+    service php${PHP_VERSION}-fpm status  # Output the status of PHP-FPM for debugging
+    # Check PHP-FPM logs
+    tail -n 50 /var/log/php${PHP_VERSION}-fpm.log
     exit 1
-}
+fi
 
-# Command pass-through to allow further execution
-exec "$@"
+echo " * PHP-FPM socket found at /run/php/php${PHP_VERSION}-fpm.sock."
+
+# Start NGINX
+echo " * Starting NGINX..."
+nginx -g 'daemon off;' &
+wait "$!"

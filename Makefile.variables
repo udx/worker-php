@@ -1,6 +1,6 @@
 # Variables
-IMAGE_NAME ?= udx-worker/udx-worker
+IMAGE_NAME ?= udx-worker-php
 TAG ?= latest
 DOCKER_IMAGE := $(IMAGE_NAME):$(TAG)
-CONTAINER_NAME ?= udx-worker-container
+CONTAINER_NAME ?= udx-worker-php-container
 DEBUG ?= false
