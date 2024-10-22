@@ -33,6 +33,9 @@ RUN mkdir -p /run/php /var/www/html && \
     chown -R www-data:www-data /run/php /var/www/html && \
     chmod -R 755 /run/php /var/www/html
 
+# Copy custom NGINX configuration
+COPY src/configs/nginx/default.conf /etc/nginx/sites-available/default
+
 # Copy the entrypoint script to /usr/local/bin
 COPY ./bin/entrypoint.sh /usr/local/bin/entrypoint.sh
 
