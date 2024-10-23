@@ -24,14 +24,14 @@ jobs:
 
       # Initialize the CodeQL tools for scanning.
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
+        uses: github/codeql-action/init@v3
         with:
           languages: ${{ matrix.language }}
           # Add any additional queries you’d like to run
           queries: +security-extended, +performance, +maintainability
 
       - name: Autobuild
-        uses: github/codeql-action/autobuild@v2
+        uses: github/codeql-action/autobuild@v3
 
       # Scan all NGINX configuration files
       - name: Scan NGINX Configurations
@@ -42,7 +42,7 @@ jobs:
 
       # Run the CodeQL analysis
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2
+        uses: github/codeql-action/analyze@v3
         with:
           category: "security"
 
@@ -71,7 +71,7 @@ jobs:
 
       - name: Install hadolint
         run: |
-          wget -O /usr/local/bin/hadolint https://github.com/hadolint/hadolint/releases/download/v2.10.0/hadolint-Linux-x86_64 && chmod +x /usr/local/bin/hadolint
+          wget -O /usr/local/bin/hadolint https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64 && chmod +x /usr/local/bin/hadolint
 
       - name: Run hadolint
         run: |
