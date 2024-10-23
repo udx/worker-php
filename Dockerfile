@@ -24,7 +24,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Ensure the correct PHP-FPM socket in NGINX config
-RUN sed -i 's|fastcgi_pass unix:/run/php/php.*-fpm.sock|fastcgi_pass unix:/run/php/php${PHP_VERSION}-fpm.sock|' /etc/nginx/sites-available/default
+RUN sed -i "s|fastcgi_pass unix:/run/php/php.*-fpm.sock|fastcgi_pass unix:/run/php/php${PHP_VERSION}-fpm.sock|" /etc/nginx/sites-available/default
 
 # Create necessary directories and set correct permissions
 RUN mkdir -p /run/php /var/www/html && \
@@ -43,6 +43,9 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 # Set volumes and working directory
 VOLUME [ "/var/www", "/home/${USER}" ]
 WORKDIR /var/www/html
+
+# Switch to non-root user 'udx' as per base image configuration
+USER ${USER}
 
 # Use the entrypoint script
 CMD ["/usr/local/bin/entrypoint.sh"]
