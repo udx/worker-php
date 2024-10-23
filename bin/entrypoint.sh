@@ -13,11 +13,11 @@ echo " * Starting UDX site version [${DOCKER_IMAGE_VERSION}]."
 
 # Start PHP-FPM and check if it started correctly
 echo " * Starting PHP-FPM..."
-if service php${PHP_VERSION}-fpm start; then
+if service php"${PHP_VERSION}"-fpm start; then
     echo " * PHP-FPM started."
 else
     echo "Error: PHP-FPM failed to start."
-    service php${PHP_VERSION}-fpm status
+    service php"${PHP_VERSION}"-fpm status
     exit 1
 fi
 
@@ -25,11 +25,11 @@ fi
 sleep 3
 
 # Check if PHP-FPM socket exists
-if [ ! -S /run/php/php${PHP_VERSION}-fpm.sock ]; then
+if [ ! -S /run/php/php"${PHP_VERSION}"-fpm.sock ]; then
     echo "Error: No PHP-FPM socket found at /run/php/php${PHP_VERSION}-fpm.sock."
-    service php${PHP_VERSION}-fpm status  # Output the status of PHP-FPM for debugging
+    service php"${PHP_VERSION}"-fpm status  # Output the status of PHP-FPM for debugging
     # Check PHP-FPM logs
-    tail -n 50 /var/log/php${PHP_VERSION}-fpm.log
+    tail -n 50 /var/log/php"${PHP_VERSION}"-fpm.log
     exit 1
 fi
 
