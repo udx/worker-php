@@ -89,6 +89,11 @@ jobs:
         run: |
           pip install yamllint
 
-      - name: Run yamllint
+      - name: Find YAML files and run yamllint if they exist
         run: |
-          find ./src/configs -name '*.yml' -print0 | xargs -0 yamllint
+          yaml_files=$(find . -name '*.yml' -o -name '*.yaml')
+          if [ -n "$yaml_files" ]; then
+          echo "$yaml_files" | xargs yamllint
+          else
+          echo "No YAML files found, skipping linting."
+          fi
