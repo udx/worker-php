@@ -1,18 +1,33 @@
-# Ignore the following files and directories
+# Credentials and sensitive data
+.env
 
-# Git files
+# Git and version control related files
 .git
+.gitignore
+.gitattributes
+.yamllint
 
-# Docker configuration files
-.dockerignore
+# CI/CD and GitHub-related files
+ci/*
+.github/*
 
-# IDE configuration files
-*.idea
-*.vscode
+# Documentation files
+README.md
+SECURITY.md
 
-# System files
-.DS_Store
-Thumbs.db
+# Local development scripts and helper files
+Makefile
+Makefile.help
+Makefile.variables
 
-# Test scripts
-src/scripts/*
+# Build artifacts and temporary files
+*.log
+*.tmp
+*.swp
+*.bak
+*.old
+
+# Ignore IDE specific and Prettier configuration files
+.vscode/
+*.iml
+.prettierignore
