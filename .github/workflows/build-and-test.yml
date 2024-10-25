@@ -35,7 +35,8 @@
     
           - name: Install Trivy
             run: |
-              curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sudo sh -s -- -b /usr/local/bin
+              curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh \
+                | sudo sh -s -- -b /usr/local/bin
     
           - name: Trivy Scanning
             run: |
@@ -53,7 +54,8 @@
                 echo "Running Trivy scan, attempt $attempt..."
     
                 # Run the Trivy scan and capture the exit status
-                trivy image --severity CRITICAL --exit-code 1 --quiet udx-worker-php:latest | tee trivy.log | grep -v 'INFO'
+                trivy image --severity CRITICAL --exit-code 1 --quiet udx-worker-php:latest \
+                  | tee trivy.log | grep -v 'INFO'
                 scan_exit_code=$?
     
                 # Check for CRITICAL vulnerabilities
@@ -79,5 +81,3 @@
                 echo "Failed to complete Trivy scan after $max_retries attempts."
                 exit 1
               fi
-    
-    
