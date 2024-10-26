@@ -1,0 +1,10 @@
+---
+mode: ContinuousDeployment
+
+branches:
+  latest:
+    regex: ^latest$
+    increment: Minor
+    source-branches: []
+
+assembly-versioning-scheme: MajorMinorPatch
