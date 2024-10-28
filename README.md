@@ -1,34 +1,40 @@
 # UDX Worker PHP Repository
 
-This repository contains a containerized PHP application built on the `udx-worker` base image.
+A flexible Docker image for running PHP applications.It includes NGINX and PHP-FPM, providing a ready-to-use environment to deploy and serve your PHP projects.
 
 ## Development
 
 ### Prerequisites
 
-- Docker installed.
-- PHP scripts should be placed in the `src/scripts/` directory (these scripts are not part of this repository and should be added by the user).
+- **Docker** installed
 
-### Key Commands
+### Using the Image
 
-- **Build the Docker Image**: `make build`
-- **Run the Container**: `make run`
-- **Run in Interactive Mode**: `make run-it`
-- **Exec into the Container**: `make exec`
-- **View Logs**: `make log`
+This image can be used as a base for developing and deploying your PHP applications:
+
+- The `src/scripts/` directory contains a simple test script to verify PHP functionality.
+- No application scripts are included by default.
+- You can add your own scripts or create a child Docker image for specific use cases, such as WordPress or Laravel.
+
+### Commands
+
+Run `make` to see all available commands and variables.
 
 ## Deployment
 
-1. **Build the Image**: `make build`
+1. **Build Image**: `make build`
 2. **Push to Registry**: Tag and push the image to your container registry.
-3. **Deploy Your Own App**:
-   - Place your PHP scripts in the `src/scripts/` directory.
-   - Build and push the image to your registry.
-   - Deploy using `docker run`, specifying your custom command if needed, e.g.,
+3. **Run Your App**:
+   - Run the following command to deploy your PHP application:
      ```sh
-     docker run -d --name udx-worker-php -p 8080:8080 your-registry/udx-worker-php:latest php /usr/src/app/scripts/your-script.php
+     docker run -d -p 8080:80 -v /path/to/your/php/app:/var/www/html --name your-app-container udx-worker-php:latest
      ```
+   - Replace `/path/to/your/php/app` with the path to your PHP application code.
 
-## Cleanup
+## Configuration
 
-- **Remove Container**: `make clean`
+Configurations are in `Makefile.variables` for easy editing.
+
+## Notes
+
+Based on the `udx-worker` base image, which provides a standardized environment with essential tools for running various applications, ensuring consistency and ease of deployment. Learn more about it [here](https://udx.io/products/udx-worker).
