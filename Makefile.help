@@ -8,8 +8,9 @@ HELP_LOG = "View the container logs."
 HELP_CLEAN = "Stop and delete the running container if it exists."
 HELP_TEST = "Run the validation tests after building the Docker image."
 HELP_DEV_PIPELINE = "Run the development pipeline: build and test."
-HELP_RUN_TEST = "Run the container in test mode with the test script."
+HELP_RUN_TEST = "Run a specific test script inside the container."
 HELP_RUN_WITH_VOLUME = "Run the Docker container with port mapping and volume mounting."
+HELP_RUN_ALL_TESTS = "Run all test scripts located in the tests directory."
 
 # Help target
 help:
@@ -40,6 +41,9 @@ help:
 	@echo "$(HELP_RUN_TEST)"
 	@echo "make run-test"
 	@echo ""
+	@echo "$(HELP_RUN_ALL_TESTS)"
+	@echo "make run-all-tests"
+	@echo ""
 	@echo "$(HELP_TEST)"
 	@echo "make test"
 	@echo ""
@@ -54,4 +58,7 @@ help:
 	@echo "  HOST_PORT (default: $(HOST_PORT))"
 	@echo "  CONTAINER_PORT (default: $(CONTAINER_PORT))"
 	@echo "  PHP_VERSION (default: $(PHP_VERSION))"
+	@echo "  SRC_PATH (default: $(SRC_PATH))"
+	@echo "  CONTAINER_SRC_PATH (default: $(CONTAINER_SRC_PATH))"
 	@echo "  TEST_SCRIPT_PATH (default: $(TEST_SCRIPT_PATH))"
+	@echo "  TESTS_PATH (default: $(TESTS_PATH))"

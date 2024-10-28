@@ -14,4 +14,7 @@ CONTAINER_PORT := 80
 PHP_VERSION := 8.3
 
 # Paths
-TEST_SCRIPT_PATH := /var/www/html/scripts/test.php
+SRC_PATH := src
+CONTAINER_SRC_PATH := /var/www/html
+TEST_SCRIPT_PATH := $(CONTAINER_SRC_PATH)/tests/test.php
+TESTS_PATH := $(CONTAINER_SRC_PATH)/tests
