@@ -4,15 +4,18 @@ FROM usabilitydynamics/udx-worker:0.1.0
 # Set the maintainer of the image
 LABEL maintainer="UDX"
 
-# Arguments for PHP version and package versions
+# Arguments for PHP and NGINX versions
 ARG PHP_VERSION=8.3
 ARG PHP_PACKAGE_VERSION=8.3.6-0ubuntu0.24.04.2
 ARG NGINX_VERSION=1.24.0-2ubuntu7.1
 
+# Environment variable for PHP version
+ENV PHP_VERSION=${PHP_VERSION}
+
 # Switch to root user for installation and configuration
 USER root
 
-# Install PHP, NGINX, and related dependencies
+# Install PHP, NGINX, and necessary dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     nginx=${NGINX_VERSION} \
     php${PHP_VERSION}-fpm=${PHP_PACKAGE_VERSION} \
@@ -23,28 +26,41 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     php${PHP_VERSION}-zip=${PHP_PACKAGE_VERSION} && \
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# Ensure the correct PHP-FPM socket in NGINX config
-RUN sed -i "s|fastcgi_pass unix:/run/php/php.*-fpm.sock|fastcgi_pass unix:/run/php/php${PHP_VERSION}-fpm.sock|" /etc/nginx/sites-available/default
-
-# Create necessary directories and set correct permissions
-RUN mkdir -p /run/php /var/www/html && \
-    chown -R www-data:www-data /run/php /var/www/html && \
-    chmod -R 755 /run/php /var/www/html
-
-# Copy custom NGINX configuration
+# Copy and modify NGINX config
 COPY src/configs/nginx/default.conf /etc/nginx/sites-available/default
+RUN sed -i "s|\${PHP_VERSION}|${PHP_VERSION}|g" /etc/nginx/sites-available/default
 
-# Copy the entrypoint script to /usr/local/bin
+# Ensure PHP-FPM configurations have correct variables
+COPY src/configs/php/php-fpm.conf /etc/php/${PHP_VERSION}/fpm/php-fpm.conf
+COPY src/configs/php/www.conf /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf
+RUN sed -i "s|\${USER}|${USER}|g; s|\${PHP_VERSION}|${PHP_VERSION}|g" /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf
+
+# Include PHP-FPM pool configuration if not present
+RUN grep -q "^include=/etc/php/${PHP_VERSION}/fpm/pool.d/*.conf" /etc/php/${PHP_VERSION}/fpm/php-fpm.conf || \
+    echo "include=/etc/php/${PHP_VERSION}/fpm/pool.d/*.conf" >> /etc/php/${PHP_VERSION}/fpm/php-fpm.conf
+
+# Clean any existing `pid` directive and add only one `pid /tmp/nginx.pid;`
+RUN sed -i '/pid\s*\/var\/run\/nginx.pid;/d; /pid\s*\/tmp\/nginx.pid;/d' /etc/nginx/nginx.conf && \
+    echo "pid /tmp/nginx.pid;" >> /etc/nginx/nginx.conf
+
+# Prepare writable directories for NGINX and PHP-FPM
+RUN mkdir -p /var/log/php /var/log/nginx /run/php /tmp /var/lib/nginx/body && \
+    touch /var/log/php/fpm.log /tmp/nginx.pid && \
+    chown -R ${USER}:${USER} /var/log/php /var/log/nginx /run/php /tmp /var/lib/nginx /var/www/html && \
+    chmod -R 755 /var/log/php /var/log/nginx /run/php /tmp /var/lib/nginx /var/www/html
+
+# Verify PHP-FPM configuration syntax
+RUN php-fpm${PHP_VERSION} --fpm-config /etc/php/${PHP_VERSION}/fpm/php-fpm.conf -t
+
+# Copy the entrypoint script and set permissions
 COPY ./bin/entrypoint.sh /usr/local/bin/entrypoint.sh
-
-# Ensure the entrypoint script is executable
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-# Set volumes and working directory
+# Set volumes and the working directory
 VOLUME [ "/var/www", "/home/${USER}" ]
 WORKDIR /var/www/html
 
-# Switch to non-root user 'udx' as per base image configuration
+# Switch to non-root user as per base image configuration
 USER ${USER}
 
 # Use the entrypoint script
