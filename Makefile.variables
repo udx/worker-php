@@ -16,11 +16,12 @@ PHP_VERSION := 8.3
 # Paths
 SRC_PATH := src
 CONTAINER_SRC_PATH := /var/www/html
-TEST_SCRIPT_PATH := $(CONTAINER_SRC_PATH)/tests/test.php
-TESTS_PATH := $(CONTAINER_SRC_PATH)/tests
 
-# NGINX PID file path
-PID_FILE_PATH := /tmp/nginx.pid
+# Specific test script name
+TEST_SCRIPT := test.php                  
+
+# Path for all test scripts
+TESTS_PATH := $(CONTAINER_SRC_PATH)/tests 
 
 # Parallelism for running tests
 TEST_PARALLELISM := 4
