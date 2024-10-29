@@ -10,11 +10,11 @@ rm -f /tmp/nginx.pid /run/php/php*.pid || true
 
 # Verifying PHP-FPM pool configuration
 echo "Verifying PHP-FPM pool configuration..."
-cat /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf
+cat /etc/php/"${PHP_VERSION}"/fpm/pool.d/www.conf
 
 # Start PHP-FPM and check if it starts correctly
 echo " * Starting PHP-FPM..."
-if php-fpm${PHP_VERSION} --fpm-config /etc/php/${PHP_VERSION}/fpm/php-fpm.conf; then
+if php-fpm"${PHP_VERSION}" --fpm-config /etc/php/"${PHP_VERSION}"/fpm/php-fpm.conf; then
     echo " * PHP-FPM started."
 else
     echo "Error: PHP-FPM failed to start."
