@@ -1,6 +1,6 @@
-# UDX Worker PHP Repository
+# UDX Worker PHP
 
-A flexible Docker image for running PHP applications.It includes NGINX and PHP-FPM, providing a ready-to-use environment to deploy and serve your PHP projects.
+A versatile Docker image for running PHP applications with NGINX and PHP-FPM, providing a ready-to-use environment to deploy and serve your PHP projects.
 
 ## Development
 
@@ -10,31 +10,20 @@ A flexible Docker image for running PHP applications.It includes NGINX and PHP-F
 
 ### Using the Image
 
-This image can be used as a base for developing and deploying your PHP applications:
+This image is designed to serve as a base for developing and deploying PHP applications. It’s simple to adapt:
 
-- The `src/scripts/` directory contains a simple test script to verify PHP functionality.
-- No application scripts are included by default.
-- You can add your own scripts or create a child Docker image for specific use cases, such as WordPress or Laravel.
+- No application scripts are included by default. The `src/tests/` directory includes sample tests for PHP and NGINX functionality.
+- Add your own scripts or extend the image for specific applications, such as WordPress or Laravel.
 
 ### Commands
 
-Run `make` to see all available commands and variables.
+Use `make` to view all available commands and configurable variables.
 
 ## Deployment
 
-1. **Build Image**: `make build`
-2. **Push to Registry**: Tag and push the image to your container registry.
-3. **Run Your App**:
-   - Run the following command to deploy your PHP application:
-     ```sh
-     docker run -d -p 8080:80 -v /path/to/your/php/app:/var/www/html --name your-app-container udx-worker-php:latest
-     ```
-   - Replace `/path/to/your/php/app` with the path to your PHP application code.
+1. Build image `make build`
+2. Run Your App `make run`
 
 ## Configuration
 
-Configurations are in `Makefile.variables` for easy editing.
-
-## Notes
-
-Based on the `udx-worker` base image, which provides a standardized environment with essential tools for running various applications, ensuring consistency and ease of deployment. Learn more about it [here](https://udx.io/products/udx-worker).
+You can configure build and runtime variables in Makefile.variables for easy adjustments.
