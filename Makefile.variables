@@ -1,6 +1,27 @@
-# Variables
-IMAGE_NAME ?= udx-worker-php
-TAG ?= latest
-DOCKER_IMAGE := $(IMAGE_NAME):$(TAG)
-CONTAINER_NAME ?= udx-worker-php-container
-DEBUG ?= false
+# Image and Container Configuration
+DOCKER_IMAGE := udx-worker-php:latest
+CONTAINER_NAME := udx-worker-php-container
+
+# Platform and Build Configuration
+MULTIPLATFORM := false
+BUILD_PLATFORMS := linux/amd64,linux/arm64
+
+# Port Configuration
+HOST_PORT := 8080
+CONTAINER_PORT := 80
+
+# PHP Configuration
+PHP_VERSION := 8.3
+
+# Paths
+SRC_PATH := src
+CONTAINER_SRC_PATH := /var/www/html
+
+# Specific test script name
+TEST_SCRIPT := test.php                  
+
+# Path for all test scripts
+TESTS_PATH := $(CONTAINER_SRC_PATH)/tests 
+
+# Parallelism for running tests
+TEST_PARALLELISM := 4
