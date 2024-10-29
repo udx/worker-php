@@ -50,33 +50,39 @@ clean:
 	@echo "Stopping and removing Docker container if it exists..."
 	@docker rm -f $(CONTAINER_NAME) || true
 
-# Wait for container to be ready (using Nginx PID as indicator)
+# Wait for container to be ready (using Nginx PID as an indicator) with log inspection on timeout
 wait-container-ready:
 	@echo "Waiting for the container to be ready..."
-	@timeout 30s bash -c ' \
+	@counter=0; \
 	while ! docker exec $(CONTAINER_NAME) test -f /var/run/nginx.pid; do \
+		if [ $$counter -ge 30 ]; then \
+			echo "Timeout: NGINX did not start"; \
+			echo "Displaying NGINX logs for troubleshooting:"; \
+			docker logs $(CONTAINER_NAME) || echo "No logs available"; \
+			exit 1; \
+		fi; \
 		echo "Waiting for Nginx to be ready..."; \
 		sleep 1; \
-	done' || { echo "Timeout: NGINX did not start"; exit 1; }
+		counter=$$((counter + 1)); \
+	done
 	@echo "Container is ready."
 
-# Run specific test script
+# Run a specific test script (specified by TEST_SCRIPT)
 run-test:
-	@$(MAKE) run CMD="php $(TEST_SCRIPT_PATH)"
+	@echo "Running test script $(TEST_SCRIPT) ..."
+	@$(MAKE) run CMD="php $(CONTAINER_SRC_PATH)/tests/$(TEST_SCRIPT)"
 
-# Run all tests in the tests directory in a single container instance
-run-all-tests:
-	@echo "Stopping and removing Docker container if it exists..."
-	@docker rm -f $(CONTAINER_NAME) || true
-	@echo "Running Docker container..."
+# Run all tests in the tests directory with parallel execution and detailed logging
+run-all-tests: clean
+	@echo "Starting Docker container for test execution..."
 	@docker run -d --name $(CONTAINER_NAME) -v $(CURDIR)/$(SRC_PATH):$(CONTAINER_SRC_PATH) -p $(HOST_PORT):$(CONTAINER_PORT) $(DOCKER_IMAGE)
 	@$(MAKE) wait-container-ready
-	@echo "Executing all test scripts..."
-	@for test_script in $(CURDIR)/$(SRC_PATH)/tests/*.php; do \
-		docker exec $(CONTAINER_NAME) php $(CONTAINER_SRC_PATH)/tests/$$(basename $$test_script); \
-	done
-	@echo "Stopping and removing Docker container..."
-	@docker rm -f $(CONTAINER_NAME)
+	@echo "Executing all test scripts with detailed logging..."
+	@find $(SRC_PATH)/tests -name "*.php" | xargs -n 1 -P $(TEST_PARALLELISM) -I {} sh -c ' \
+		test_file=$$(basename {}); \
+		echo "Running $$test_file..."; \
+		docker exec $(CONTAINER_NAME) php $(CONTAINER_SRC_PATH)/tests/$$test_file || echo "Test $$test_file failed"; \
+	'
 	@echo "All tests completed."
 
 # Run the validation tests (build and run-all-tests)

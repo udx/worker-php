@@ -2,7 +2,7 @@
 set -e
 
 # Graceful shutdown handling
-trap 'echo "Received termination signal, shutting down..."; exit 0;' SIGTERM SIGINT
+trap 'echo "Received termination signal, shutting down..."; nginx -s stop; php-fpm${PHP_VERSION} --fpm-config /etc/php/${PHP_VERSION}/fpm/php-fpm.conf --stop; exit 0;' SIGTERM SIGINT
 
 # Clean up old PID files
 echo " * Cleaning up old PID files..."
@@ -21,7 +21,7 @@ else
     exit 1
 fi
 
-# Start NGINX with explicit PID file location
+# Start NGINX with an explicit PID file path
 echo " * Starting NGINX..."
 nginx -g "pid /tmp/nginx.pid; daemon off;" &
 wait "$!"
