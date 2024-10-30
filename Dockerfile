@@ -24,10 +24,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     php"${PHP_VERSION}"-zip="${PHP_PACKAGE_VERSION}" && \
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# Clean any default NGINX configurations and set custom configurations
-RUN rm -f /etc/nginx/nginx.conf /etc/nginx/conf.d/* /etc/nginx/sites-enabled/* /etc/nginx/sites-available/*
+# Copy the NGINX and PHP configurations
 COPY src/configs/nginx/nginx.conf /etc/nginx/nginx.conf
 COPY src/configs/nginx/default.conf /etc/nginx/sites-available/default
+
+# Copy index.html to the document root
+COPY src/index.html /var/www/html/index.html
+
+# Ensure index.html has appropriate permissions
+RUN chmod 644 /var/www/html/index.html
 
 # Update default.conf with PHP socket
 RUN sed -i "s|\${PHP_VERSION}|${PHP_VERSION}|g" /etc/nginx/sites-available/default
@@ -61,3 +66,7 @@ USER "${USER}"
 VOLUME [ "/var/www", "/home/${USER}" ]
 WORKDIR /var/www/html
 CMD ["/usr/local/bin/entrypoint.sh"]
+
+# Add a health check to verify NGINX is serving pages
+HEALTHCHECK --interval=10s --timeout=3s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost/index.html || exit 1
