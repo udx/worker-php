@@ -1,33 +1,32 @@
-# Credentials and sensitive data
+# Exclude sensitive data and environment configuration
 .env
 
-# Git and version control related files
+# Exclude Git and version control files
 .git
 .gitignore
 .gitattributes
+
+# Exclude CI/CD and GitHub configuration files
+.github/
+ci/git-version.yml
 .yamllint
 
-# CI/CD and GitHub-related files
-ci/*
-.github/*
-
-# Documentation files
-README.md
+# Documentation files not needed for the Docker image
 SECURITY.md
 
-# Local development scripts and helper files
-Makefile
+# Local development helper files not required in the container
 Makefile.help
 Makefile.variables
 
-# Build artifacts and temporary files
+# Exclude build artifacts, temporary files, and editor backups
 *.log
 *.tmp
 *.swp
 *.bak
 *.old
 
-# Ignore IDE specific and Prettier configuration files
+# Exclude IDE and editor-specific files
 .vscode/
+.idea/
 *.iml
 .prettierignore
