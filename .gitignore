@@ -1,12 +1,7 @@
 # macOS system files
 .DS_Store
 
-# Log files
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# IDE specific files
+# IDE and editor specific files
 .idea/
 .vscode/
 *.iml
@@ -14,5 +9,21 @@ yarn-error.log*
 # Environment variables file
 .env
 
-# Ignore Prettier configuration overrides for development
-.prettierignore
+# Log files
+*.log
+
+# Ignore any compiled or temporary files
+dist/
+tmp/
+.cache/
+
+# Ignore Docker-related files if you create overrides
+docker-compose.override.yml
+docker-compose.yml
+
+# Ignore any build or runtime files generated during tests
+coverage/
+src/tests/*.log
+
+# Ignore any local configuration or generated files
+Makefile.local
