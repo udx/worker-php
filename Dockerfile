@@ -40,6 +40,13 @@ RUN sed -i "s|\${PHP_VERSION}|${PHP_VERSION}|g" /etc/nginx/sites-available/defau
     grep -q "^include=/etc/php/${PHP_VERSION}/fpm/pool.d/*.conf" /etc/php/"${PHP_VERSION}"/fpm/php-fpm.conf || \
     echo "include=/etc/php/${PHP_VERSION}/fpm/pool.d/*.conf" >> /etc/php/"${PHP_VERSION}"/fpm/php-fpm.conf
 
+# Set PHP-FPM socket permissions in the configuration
+RUN sed -i "s|^error_log =.*|error_log = /var/log/php/fpm.log|" /etc/php/"${PHP_VERSION}"/fpm/php-fpm.conf && \
+    sed -i "s|^listen.owner =.*|listen.owner = ${USER}|" /etc/php/"${PHP_VERSION}"/fpm/pool.d/www.conf && \
+    sed -i "s|^listen.group =.*|listen.group = ${USER}|" /etc/php/"${PHP_VERSION}"/fpm/pool.d/www.conf && \
+    sed -i "s|^listen.mode =.*|listen.mode = 0660|" /etc/php/"${PHP_VERSION}"/fpm/pool.d/www.conf && \
+    chown -R "${USER}:${USER}" /var/log/php/fpm.log
+
 # Validate PHP-FPM configuration syntax
 RUN php-fpm"${PHP_VERSION}" --fpm-config /etc/php/"${PHP_VERSION}"/fpm/php-fpm.conf -t
 
@@ -54,7 +61,3 @@ USER "${USER}"
 VOLUME [ "/var/www", "/home/${USER}" ]
 WORKDIR /var/www/html
 CMD ["/usr/local/bin/entrypoint.sh"]
-
-# Add a health check to verify NGINX is serving pages
-HEALTHCHECK --interval=10s --timeout=3s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost/index.html || exit 1
