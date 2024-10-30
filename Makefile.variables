@@ -18,10 +18,10 @@ SRC_PATH := src
 CONTAINER_SRC_PATH := /var/www/html
 
 # Specific test script name
-TEST_SCRIPT := test.php                  
+TEST_SCRIPT := test.php
 
 # Path for all test scripts
-TESTS_PATH := $(CONTAINER_SRC_PATH)/tests 
+TESTS_PATH := $(CONTAINER_SRC_PATH)/tests
 
 # Parallelism for running tests
 TEST_PARALLELISM := 4
