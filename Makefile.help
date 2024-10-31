@@ -1,9 +1,9 @@
 # Help content for Makefile targets
 
 HELP_BUILD = "Build the Docker image."
-HELP_RUN = "Run the Docker container, optionally with a specified command."
+HELP_RUN = "Run the Docker container for default tests, such as tests in src/tests directory."
+HELP_DEPLOY = "Deploy application using the Docker Hub image with user-provided code via volume mount."
 HELP_RUN_IT = "Run the Docker container interactively with a shell."
-HELP_RUN_WITH_VOLUME = "Run the Docker container with port mapping and volume mounting."
 HELP_EXEC = "Execute a command inside the running container."
 HELP_LOG = "View the logs of the running container."
 HELP_CLEAN = "Stop and delete the running container if it exists."
@@ -18,41 +18,41 @@ help:
 	@echo ""
 	@echo "Usage:"
 	@echo ""
-	@echo "$(HELP_BUILD)"
-	@echo "make build"
+	@echo $(HELP_BUILD)
+	@echo "  make build"
 	@echo ""
-	@echo "$(HELP_RUN)"
-	@echo "make run"
+	@echo $(HELP_RUN)
+	@echo "  make run"
 	@echo ""
-	@echo "$(HELP_RUN_IT)"
-	@echo "make run-it"
+	@echo $(HELP_DEPLOY)
+	@echo "  make deploy"
 	@echo ""
-	@echo "$(HELP_RUN_WITH_VOLUME)"
-	@echo "make run-with-volume"
+	@echo $(HELP_RUN_IT)
+	@echo "  make run-it"
 	@echo ""
-	@echo "$(HELP_EXEC)"
-	@echo "make exec"
+	@echo $(HELP_EXEC)
+	@echo "  make exec"
 	@echo ""
-	@echo "$(HELP_LOG)"
-	@echo "make log"
+	@echo $(HELP_LOG)
+	@echo "  make log"
 	@echo ""
-	@echo "$(HELP_CLEAN)"
-	@echo "make clean"
+	@echo $(HELP_CLEAN)
+	@echo "  make clean"
 	@echo ""
-	@echo "$(HELP_WAIT_CONTAINER_READY)"
-	@echo "make wait-container-ready"
+	@echo $(HELP_WAIT_CONTAINER_READY)
+	@echo "  make wait-container-ready"
 	@echo ""
-	@echo "$(HELP_RUN_TEST)"
-	@echo "make run-test"
+	@echo $(HELP_RUN_TEST)
+	@echo "  make run-test"
 	@echo ""
-	@echo "$(HELP_RUN_ALL_TESTS)"
-	@echo "make run-all-tests"
+	@echo $(HELP_RUN_ALL_TESTS)
+	@echo "  make run-all-tests"
 	@echo ""
-	@echo "$(HELP_TEST)"
-	@echo "make test"
+	@echo $(HELP_TEST)
+	@echo "  make test"
 	@echo ""
-	@echo "$(HELP_DEV_PIPELINE)"
-	@echo "make dev-pipeline"
+	@echo $(HELP_DEV_PIPELINE)
+	@echo "  make dev-pipeline"
 	@echo ""
 	@echo "Variables:"
 	@echo "  DOCKER_IMAGE (default: $(DOCKER_IMAGE))"

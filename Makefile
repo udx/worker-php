@@ -5,7 +5,7 @@ include Makefile.help
 # Default target
 .DEFAULT_GOAL := help
 
-.PHONY: run run-it clean build exec log test dev-pipeline run-with-volume run-test run-all-tests wait-container-ready
+.PHONY: run deploy run-it clean build exec log test dev-pipeline run-test run-all-tests wait-container-ready
 
 # Build the Docker image
 build:
@@ -19,21 +19,28 @@ build:
 	fi
 	@echo "Docker image build completed."
 
-# Run Docker container with optional command
+# Run Docker container for default tests (e.g., tests in /src/tests directory)
 run: clean
-	@echo "Running Docker container..."
-	@docker run $(if $(INTERACTIVE),-it,-d) --rm --name $(CONTAINER_NAME) \
+	@echo "Running Docker container for testing..."
+	@docker run -d --rm --name $(CONTAINER_NAME) \
 		-v $(CURDIR)/$(SRC_PATH):$(CONTAINER_SRC_PATH) -p $(HOST_PORT):$(CONTAINER_PORT) \
-		$(DOCKER_IMAGE) $(CMD)
-	$(if $(filter false,$(INTERACTIVE)),docker logs -f $(CONTAINER_NAME);)
+		$(DOCKER_IMAGE)
+	@$(MAKE) wait-container-ready
+	@docker logs -f $(CONTAINER_NAME)
+
+# Deploy application with the pulled Docker Hub image and user-provided app code
+deploy: clean
+	@echo "Deploying PHP application..."
+	@docker run -d --rm --name $(CONTAINER_NAME) \
+		-v $(CURDIR)/$(SRC_PATH):/var/www/html \
+		-p $(HOST_PORT):80 \
+		$(DOCKER_IMAGE)
+	@echo "Application is accessible at http://localhost:$(HOST_PORT)"
+	@$(MAKE) wait-container-ready
 
 # Run Docker container in interactive mode
 run-it:
 	@$(MAKE) run INTERACTIVE=true CMD="/bin/sh"
-
-# Run Docker container with volume and port mapping (calls run without CMD)
-run-with-volume:
-	@$(MAKE) run
 
 # Execute a command in the running container
 exec:

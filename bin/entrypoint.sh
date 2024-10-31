@@ -12,15 +12,18 @@ rm -f /tmp/nginx.pid /run/php/php*.pid || true
 echo "Verifying PHP-FPM pool configuration..."
 cat /etc/php/"${PHP_VERSION}"/fpm/pool.d/www.conf
 
-# Start PHP-FPM and check if it starts correctly
+# Start PHP-FPM in the background and check if it starts correctly
 echo " * Starting PHP-FPM..."
-if php-fpm"${PHP_VERSION}" --fpm-config /etc/php/"${PHP_VERSION}"/fpm/php-fpm.conf; then
-    echo " * PHP-FPM started."
-else
+php-fpm"${PHP_VERSION}" --fpm-config /etc/php/"${PHP_VERSION}"/fpm/php-fpm.conf &
+
+# Wait for PHP-FPM to be ready
+sleep 2
+if ! pgrep -x "php-fpm${PHP_VERSION}" > /dev/null; then
     echo "Error: PHP-FPM failed to start."
     exit 1
 fi
+echo " * PHP-FPM started successfully."
 
-# Start NGINX in the foreground (without pid directive)
+# Start NGINX in the foreground
 echo " * Starting NGINX..."
 nginx -g "daemon off;"
