@@ -1,5 +1,5 @@
 # Use the UDX worker as the base image
-FROM usabilitydynamics/udx-worker:0.1.0
+FROM usabilitydynamics/udx-worker:0.1.1
 
 LABEL maintainer="UDX"
 
