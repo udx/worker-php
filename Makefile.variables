@@ -1,5 +1,5 @@
 # Image and Container Configuration
-DOCKER_IMAGE := udx-worker-php:latest
+DOCKER_IMAGE := usabilitydynamics/udx-worker-php:latest
 CONTAINER_NAME := udx-worker-php-container
 
 # Platform and Build Configuration
