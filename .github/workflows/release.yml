@@ -4,6 +4,13 @@ on:
   push:
     branches:
       - "latest"
+    paths:
+      - '.github/workflows/release.yml'
+      - 'Dockerfile'
+      - 'bin/**'
+      - 'ci/**'
+      - 'src/**'
+      - LICENSE      
 
 jobs:
   docker-release:

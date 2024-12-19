@@ -6,7 +6,9 @@ on:
     paths:
       - '.github/workflows/build-and-test.yml'
       - 'Dockerfile'
+      - 'bin/**'
       - 'src/**'
+      - LICENSE
 
 jobs:
   build:
