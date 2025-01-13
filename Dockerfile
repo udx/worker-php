@@ -28,11 +28,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     chown -R "${USER}:${USER}" /var/log/php /var/log/nginx /run/php /tmp /var/lib/nginx /var/www/html && \
     chmod -R 755 /var/log/php /var/log/nginx /run/php /tmp /var/lib/nginx /var/www/html
 
-# Copy configurations and set permissions
-COPY src/configs/nginx/nginx.conf /etc/nginx/nginx.conf
-COPY src/configs/nginx/default.conf /etc/nginx/sites-available/default
-COPY src/index.html /var/www/html/index.html
-RUN chmod 644 /var/www/html/index.html
+# Copy NGINX and PHP configurations
+COPY etc/nginx/nginx.conf /etc/nginx/nginx.conf
+COPY etc/nginx/default.conf /etc/nginx/sites-available/default
+COPY etc/nginx/snippets/fastcgi-php.conf /etc/nginx/snippets/fastcgi-php"${PHP_VERSION}".conf
+COPY etc/php/php-fpm.conf /etc/php/"${PHP_VERSION}"/fpm/php-fpm.conf
+COPY etc/php/www.conf /etc/php/"${PHP_VERSION}"/fpm/pool.d/www.conf
+
+# Update default.conf with PHP socket and configure PHP-FPM with custom settings
+RUN sed -i "s|\${PHP_VERSION}|${PHP_VERSION}|g" /etc/nginx/snippets/fastcgi-php"${PHP_VERSION}".conf    
 
 # Update default.conf with PHP socket and configure PHP-FPM with custom settings
 RUN sed -i "s|\${PHP_VERSION}|${PHP_VERSION}|g" /etc/nginx/sites-available/default && \
@@ -47,12 +51,17 @@ RUN sed -i "s|^error_log =.*|error_log = /var/log/php/fpm.log|" /etc/php/"${PHP_
     sed -i "s|^listen.mode =.*|listen.mode = 0660|" /etc/php/"${PHP_VERSION}"/fpm/pool.d/www.conf && \
     chown -R "${USER}:${USER}" /var/log/php/fpm.log
 
-# Validate PHP-FPM configuration syntax
-RUN php-fpm"${PHP_VERSION}" --fpm-config /etc/php/"${PHP_VERSION}"/fpm/php-fpm.conf -t
+# Copy application source
+COPY src/index.html /var/www/html/index.html
+RUN chmod 644 /var/www/html/index.html
 
 # Copy entrypoint script and set permissions
-COPY ./bin/entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
+COPY ./bin/start-nginx.sh /usr/local/bin/start-nginx.sh
+COPY ./bin/start-php-fpm.sh /usr/local/bin/start-php-fpm.sh
+RUN chmod +x /usr/local/bin/start-nginx.sh /usr/local/bin/start-php-fpm.sh
+
+# Copy the worker config files
+COPY src/configs/services.yml /etc/worker/services.yml
 
 # Revert to non-root user
 USER "${USER}"
@@ -60,4 +69,5 @@ USER "${USER}"
 # Set volumes, working directory, and default command
 VOLUME [ "/var/www", "/home/${USER}" ]
 WORKDIR /var/www/html
-CMD ["/usr/local/bin/entrypoint.sh"]
+
+CMD ["sh"]
