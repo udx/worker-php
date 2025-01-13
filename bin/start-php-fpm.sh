@@ -6,7 +6,7 @@ trap 'echo "Received termination signal, shutting down..."; kill $(jobs -p); wai
 
 # Clean up any old PID files and the socket file
 echo " * Cleaning up old PID files and the socket file..."
-rm -f /run/php/php*.pid /run/php/php${PHP_VERSION}-fpm.sock || true
+rm -f /run/php/php*.pid /run/php/php"${PHP_VERSION}"-fpm.sock || true
 
 # Verifying PHP-FPM pool configuration
 echo "Verifying PHP-FPM pool configuration..."
