@@ -1,0 +1,14 @@
+---
+kind: workerService
+version: udx.io/worker-v1/service
+services:
+  - name: "php-fpm"
+    command: "/usr/local/bin/start-php-fpm.sh"
+    autostart: "true"
+    autorestart: "true"
+    envs:
+      - "PHP_VERSION=8.3"
+  - name: "nginx"
+    command: "/usr/local/bin/start-nginx.sh"
+    autostart: "true"
+    autorestart: "true"
