@@ -19,14 +19,13 @@ build:
 	fi
 	@echo "Docker image build completed."
 
-# Run Docker container for default tests (e.g., tests in /src/tests directory)
+# Run Docker container for default tests or in interactive mode based on INTERACTIVE variable
 run: clean
-	@echo "Running Docker container for testing..."
-	@docker run -d --rm --name $(CONTAINER_NAME) \
+	@echo "Running Docker container $(if $(INTERACTIVE),in interactive mode,for testing)..."
+	@docker run $(if $(INTERACTIVE),-it --entrypoint $(CMD),-d) --rm --name $(CONTAINER_NAME) \
 		-v $(CURDIR)/$(SRC_PATH):$(CONTAINER_SRC_PATH) -p $(HOST_PORT):$(CONTAINER_PORT) \
-		$(DOCKER_IMAGE)
+		$(DOCKER_IMAGE) $(if $(INTERACTIVE),,$(CMD))
 	@$(MAKE) wait-container-ready
-	@docker logs -f $(CONTAINER_NAME)
 
 # Deploy application with the pulled Docker Hub image and user-provided app code
 deploy: clean
@@ -40,12 +39,12 @@ deploy: clean
 
 # Run Docker container in interactive mode
 run-it:
-	@$(MAKE) run INTERACTIVE=true CMD="/bin/sh"
+	@$(MAKE) run INTERACTIVE=true CMD="/bin/bash"
 
 # Execute a command in the running container
 exec:
 	@echo "Executing into Docker container..."
-	@docker exec -it $(CONTAINER_NAME) /bin/sh
+	@docker exec -it $(CONTAINER_NAME) /bin/bash
 
 # View the container logs
 log:
