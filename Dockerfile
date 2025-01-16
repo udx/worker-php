@@ -1,7 +1,9 @@
 # Use the UDX worker as the base image
-FROM usabilitydynamics/udx-worker:0.6.0
+FROM usabilitydynamics/udx-worker:0.7.0
 
+# Add metadata labels
 LABEL maintainer="UDX"
+LABEL version="0.6.0"
 
 # Arguments and Environment Variables
 ARG PHP_VERSION=8.3
@@ -70,4 +72,4 @@ USER "${USER}"
 VOLUME [ "/var/www", "/home/${USER}" ]
 WORKDIR /var/www/html
 
-CMD ["sh"]
+CMD ["tail", "-f", "/dev/null"]
