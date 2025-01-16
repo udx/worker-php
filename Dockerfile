@@ -10,6 +10,7 @@ ARG PHP_VERSION=8.3
 ARG PHP_PACKAGE_VERSION=8.3.6-0ubuntu0.24.04.3
 ARG NGINX_VERSION=1.24.0-2ubuntu7.1
 
+# Set the PHP_VERSION as an environment variable
 ENV PHP_VERSION="${PHP_VERSION}"
 
 # Temporarily switch to root for package installation
@@ -36,6 +37,9 @@ COPY etc/nginx/default.conf /etc/nginx/sites-available/default
 COPY etc/nginx/snippets/fastcgi-php.conf /etc/nginx/snippets/fastcgi-php"${PHP_VERSION}".conf
 COPY etc/php/php-fpm.conf /etc/php/"${PHP_VERSION}"/fpm/php-fpm.conf
 COPY etc/php/www.conf /etc/php/"${PHP_VERSION}"/fpm/pool.d/www.conf
+
+# Use sed to replace ${PHP_VERSION} with the actual environment variable value in default.conf
+RUN sed -i "s|\${PHP_VERSION}|${PHP_VERSION}|g" /etc/nginx/sites-available/default
 
 # Update default.conf with PHP socket and configure PHP-FPM with custom settings
 RUN sed -i "s|\${PHP_VERSION}|${PHP_VERSION}|g" /etc/nginx/snippets/fastcgi-php"${PHP_VERSION}".conf    
