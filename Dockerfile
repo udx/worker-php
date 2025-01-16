@@ -38,14 +38,9 @@ COPY etc/nginx/snippets/fastcgi-php.conf /etc/nginx/snippets/fastcgi-php"${PHP_V
 COPY etc/php/php-fpm.conf /etc/php/"${PHP_VERSION}"/fpm/php-fpm.conf
 COPY etc/php/www.conf /etc/php/"${PHP_VERSION}"/fpm/pool.d/www.conf
 
-# Use sed to replace ${PHP_VERSION} with the actual environment variable value in default.conf
-RUN sed -i "s|\${PHP_VERSION}|${PHP_VERSION}|g" /etc/nginx/sites-available/default
-
 # Update default.conf with PHP socket and configure PHP-FPM with custom settings
-RUN sed -i "s|\${PHP_VERSION}|${PHP_VERSION}|g" /etc/nginx/snippets/fastcgi-php"${PHP_VERSION}".conf    
-
-# Update default.conf with PHP socket and configure PHP-FPM with custom settings
-RUN sed -i "s|\${PHP_VERSION}|${PHP_VERSION}|g" /etc/nginx/sites-available/default && \
+RUN sed -i "s|\${PHP_VERSION}|${PHP_VERSION}|g" /etc/nginx/snippets/fastcgi-php"${PHP_VERSION}".conf && \
+    sed -i "s|\${PHP_VERSION}|${PHP_VERSION}|g" /etc/nginx/sites-available/default && \
     sed -i "s|\${USER}|${USER}|g; s|\${PHP_VERSION}|${PHP_VERSION}|g" /etc/php/"${PHP_VERSION}"/fpm/pool.d/www.conf && \
     grep -q "^include=/etc/php/${PHP_VERSION}/fpm/pool.d/*.conf" /etc/php/"${PHP_VERSION}"/fpm/php-fpm.conf || \
     echo "include=/etc/php/${PHP_VERSION}/fpm/pool.d/*.conf" >> /etc/php/"${PHP_VERSION}"/fpm/php-fpm.conf
