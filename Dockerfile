@@ -1,13 +1,16 @@
 # Use the UDX worker as the base image
-FROM usabilitydynamics/udx-worker:0.6.0
+FROM usabilitydynamics/udx-worker:0.8.0
 
+# Add metadata labels
 LABEL maintainer="UDX"
+LABEL version="0.6.0"
 
 # Arguments and Environment Variables
 ARG PHP_VERSION=8.3
 ARG PHP_PACKAGE_VERSION=8.3.6-0ubuntu0.24.04.3
 ARG NGINX_VERSION=1.24.0-2ubuntu7.1
 
+# Set the PHP_VERSION as an environment variable
 ENV PHP_VERSION="${PHP_VERSION}"
 
 # Temporarily switch to root for package installation
@@ -36,10 +39,8 @@ COPY etc/php/php-fpm.conf /etc/php/"${PHP_VERSION}"/fpm/php-fpm.conf
 COPY etc/php/www.conf /etc/php/"${PHP_VERSION}"/fpm/pool.d/www.conf
 
 # Update default.conf with PHP socket and configure PHP-FPM with custom settings
-RUN sed -i "s|\${PHP_VERSION}|${PHP_VERSION}|g" /etc/nginx/snippets/fastcgi-php"${PHP_VERSION}".conf    
-
-# Update default.conf with PHP socket and configure PHP-FPM with custom settings
-RUN sed -i "s|\${PHP_VERSION}|${PHP_VERSION}|g" /etc/nginx/sites-available/default && \
+RUN sed -i "s|\${PHP_VERSION}|${PHP_VERSION}|g" /etc/nginx/snippets/fastcgi-php"${PHP_VERSION}".conf && \
+    sed -i "s|\${PHP_VERSION}|${PHP_VERSION}|g" /etc/nginx/sites-available/default && \
     sed -i "s|\${USER}|${USER}|g; s|\${PHP_VERSION}|${PHP_VERSION}|g" /etc/php/"${PHP_VERSION}"/fpm/pool.d/www.conf && \
     grep -q "^include=/etc/php/${PHP_VERSION}/fpm/pool.d/*.conf" /etc/php/"${PHP_VERSION}"/fpm/php-fpm.conf || \
     echo "include=/etc/php/${PHP_VERSION}/fpm/pool.d/*.conf" >> /etc/php/"${PHP_VERSION}"/fpm/php-fpm.conf
@@ -70,4 +71,4 @@ USER "${USER}"
 VOLUME [ "/var/www", "/home/${USER}" ]
 WORKDIR /var/www/html
 
-CMD ["sh"]
+CMD ["tail", "-f", "/dev/null"]
