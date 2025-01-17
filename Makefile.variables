@@ -18,7 +18,7 @@ PHP_VERSION := 8.3
 
 # Paths
 SRC_PATH := src
-CONTAINER_SRC_PATH := /var/www/html
+CONTAINER_SRC_PATH := /var/www
 
 # Specific test script name
 TEST_SCRIPT := test.php

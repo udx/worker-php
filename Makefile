@@ -23,17 +23,17 @@ build:
 run: clean
 	@echo "Running Docker container $(if $(INTERACTIVE),in interactive mode,for testing)..."
 	@docker run $(if $(INTERACTIVE),-it --entrypoint $(CMD),-d) --rm --name $(CONTAINER_NAME) \
-		-v $(CURDIR)/$(SRC_PATH):$(CONTAINER_SRC_PATH) -p $(HOST_PORT):$(CONTAINER_PORT) \
-		$(DOCKER_IMAGE) $(if $(INTERACTIVE),,$(CMD))
+		-p $(HOST_PORT):$(CONTAINER_PORT) \
+		$(DOCKER_IMAGE)
 	@$(MAKE) wait-container-ready
 
 # Deploy application with the pulled Docker Hub image and user-provided app code
 deploy: clean
 	@echo "Deploying PHP application..."
 	@docker run -d --rm --name $(CONTAINER_NAME) \
-		-v $(CURDIR)/$(SRC_PATH):/var/www/html \
+		-v $(CURDIR)/$(SRC_PATH):/var/www \
 		-p $(HOST_PORT):80 \
-		$(DOCKER_IMAGE)
+		$(DOCKER_IMAGE) $(CMD)
 	@echo "Application is accessible at http://localhost:$(HOST_PORT)"
 	@$(MAKE) wait-container-ready
 

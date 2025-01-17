@@ -59,7 +59,7 @@ docker pull usabilitydynamics/udx-worker-php:latest
 
 ```
 docker run -d --name my-php-app \
-  -v $(pwd)/my-php-app:/var/www/html \
+  -v $(pwd)/my-php-app:/var/www \
   -p 80:80 \
   usabilitydynamics/udx-worker-php:latest
 ```
@@ -97,7 +97,7 @@ APP_PATH=/path/to/your-php-app make deploy
 ```
 
 - Replace `/path/to/your-php-app` with the path to your PHP application directory.
-- This command will mount your specified application directory into the container’s `/var/www/html` directory, allowing you to run your custom application directly.
+- This command will mount your specified application directory into the container’s `/var/www` directory, allowing you to run your custom application directly.
 
 ## Configuration
 
