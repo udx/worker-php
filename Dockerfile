@@ -28,8 +28,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
     mkdir -p /var/log/php /var/log/nginx /run/php /tmp /var/lib/nginx/body && \
     touch /var/log/php/fpm.log && \
-    chown -R "${USER}:${USER}" /var/log/php /var/log/nginx /run/php /tmp /var/lib/nginx /var/www/html && \
-    chmod -R 755 /var/log/php /var/log/nginx /run/php /tmp /var/lib/nginx /var/www/html
+    chown -R "${USER}:${USER}" /var/log/php /var/log/nginx /run/php /tmp /var/lib/nginx /var/www && \
+    chmod -R 755 /var/log/php /var/log/nginx /run/php /tmp /var/lib/nginx /var/www
 
 # Copy NGINX and PHP configurations
 COPY etc/nginx/nginx.conf /etc/nginx/nginx.conf
@@ -53,8 +53,8 @@ RUN sed -i "s|^error_log =.*|error_log = /var/log/php/fpm.log|" /etc/php/"${PHP_
     chown -R "${USER}:${USER}" /var/log/php/fpm.log
 
 # Copy application source
-COPY src/index.html /var/www/html/index.html
-RUN chmod 644 /var/www/html/index.html
+COPY src/index.html /var/www/index.html
+RUN chmod 644 /var/www/index.html
 
 # Copy entrypoint script and set permissions
 COPY ./bin/start-nginx.sh /usr/local/bin/start-nginx.sh
@@ -69,6 +69,6 @@ USER "${USER}"
 
 # Set volumes, working directory, and default command
 VOLUME [ "/var/www", "/home/${USER}" ]
-WORKDIR /var/www/html
+WORKDIR /var/www
 
 CMD ["tail", "-f", "/dev/null"]

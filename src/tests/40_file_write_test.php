@@ -1,5 +1,5 @@
 <?php
-$testFile = "/var/www/html/test_write.txt";
+$testFile = "/var/www/test_write.txt";
 if (file_put_contents($testFile, "Testing file write permissions") !== false) {
     echo "File write test successful!";
     unlink($testFile); // Cleanup
