@@ -1,8 +1,8 @@
 # Image and Container Configuration
 DOCKER_IMAGE := usabilitydynamics/udx-worker-php:latest
 CONTAINER_NAME := udx-worker-php-container
-
-# Runtime Options
+VOLUMES ?= ./src/scripts:/var/www
+ENV_FILE ?= .env
 CMD ?= /bin/bash
 
 # Platform and Build Configuration

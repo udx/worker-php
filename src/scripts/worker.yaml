@@ -1,0 +1,9 @@
+---
+kind: workerConfig
+version: udx.io/worker-v1/config
+config:
+  env:
+    PHP_TEST: "1"
+
+  secrets:
+    TEST_SECRET: "azure/kv-udx-worker-tooling/test-secret"

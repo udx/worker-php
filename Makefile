@@ -19,23 +19,24 @@ build:
 	fi
 	@echo "Docker image build completed."
 
-# Run Docker container for default tests or in interactive mode based on INTERACTIVE variable
+# Run Docker container (supports interactive mode)
 run: clean
-	@echo "Running Docker container $(if $(INTERACTIVE),in interactive mode,for testing)..."
-	@docker run $(if $(INTERACTIVE),-it --entrypoint $(CMD),-d) --rm --name $(CONTAINER_NAME) \
-		-p $(HOST_PORT):$(CONTAINER_PORT) \
-		$(DOCKER_IMAGE)
-	@$(MAKE) wait-container-ready
+	@echo "Running Docker container..."
 
-# Deploy application with the pulled Docker Hub image and user-provided app code
-deploy: clean
-	@echo "Deploying PHP application..."
-	@docker run -d --rm --name $(CONTAINER_NAME) \
-		-v $(CURDIR)/$(SRC_PATH):/var/www \
-		-p $(HOST_PORT):80 \
-		$(DOCKER_IMAGE) $(CMD)
-	@echo "Application is accessible at http://localhost:$(HOST_PORT)"
+	@if [ ! -f $(ENV_FILE) ]; then \
+		echo "Creating environment file..."; \
+		touch $(ENV_FILE); \
+	else \
+		echo "Environment file exists..."; \
+	fi
+
+	@docker run $(if $(INTERACTIVE),-it,-d) --rm --name $(CONTAINER_NAME) \
+		--env-file $(ENV_FILE) \
+		-p $(HOST_PORT):$(CONTAINER_PORT) \
+		$(foreach vol,$(VOLUMES),-v $(vol)) \
+		$(DOCKER_IMAGE) $(COMMAND)
 	@$(MAKE) wait-container-ready
+	
 
 # Run Docker container in interactive mode
 run-it:
@@ -68,7 +69,7 @@ wait-container-ready:
 			exit 1; \
 		fi; \
 		echo "Waiting for services to be ready..."; \
-		sleep 1; \
+		sleep 5; \
 		counter=$$((counter + 1)); \
 	done
 	@echo "Container is ready."
