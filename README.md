@@ -93,7 +93,7 @@ By default, this command runs the container with the code located in the `src/` 
 3. Deploy Application Code. If your PHP application code is located in a different directory or repository, use the deploy target to mount it as a volume:
 
 ```
-APP_PATH=/path/to/your-php-app make deploy
+APP_PATH=/path/to/your-php-app make run
 ```
 
 - Replace `/path/to/your-php-app` with the path to your PHP application directory.
