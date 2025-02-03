@@ -1,8 +1,8 @@
 # Image and Container Configuration
 DOCKER_IMAGE := usabilitydynamics/udx-worker-php:latest
 CONTAINER_NAME := udx-worker-php-container
-
-# Runtime Options
+VOLUMES ?= ./src/scripts:/var/www
+ENV_FILE ?= .env
 CMD ?= /bin/bash
 
 # Platform and Build Configuration
@@ -10,7 +10,7 @@ MULTIPLATFORM := false
 BUILD_PLATFORMS := linux/amd64,linux/arm64
 
 # Port Configuration
-HOST_PORT := 8080
+HOST_PORT := 80
 CONTAINER_PORT := 80
 
 # PHP Configuration

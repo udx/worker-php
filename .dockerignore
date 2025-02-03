@@ -30,3 +30,6 @@ Makefile.variables
 .idea/
 *.iml
 .prettierignore
+
+# Exclude source directory
+src/

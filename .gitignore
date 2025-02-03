@@ -6,6 +6,9 @@
 .vscode/
 *.iml
 
+# Bash history file
+.bash_history
+
 # Environment variables file
 .env
 
