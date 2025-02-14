@@ -1,3 +1,16 @@
+# Colors for better visibility
+COLOR_RESET=\033[0m
+COLOR_BLUE=\033[34m
+COLOR_GREEN=\033[32m
+COLOR_RED=\033[31m
+COLOR_YELLOW=\033[33m
+
+# Symbols
+SYM_ARROW=➜
+SYM_SUCCESS=✔
+SYM_ERROR=✖
+SYM_WARNING=⚠
+
 # Image and Container Configuration
 DOCKER_IMAGE := usabilitydynamics/udx-worker-php:latest
 CONTAINER_NAME := udx-worker-php-container
@@ -28,3 +41,6 @@ TESTS_PATH := $(CONTAINER_SRC_PATH)/tests
 
 # Parallelism for running tests
 TEST_PARALLELISM := 4
+
+# Additional flags
+FOLLOW_LOGS ?= false
