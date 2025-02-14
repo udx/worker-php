@@ -9,70 +9,85 @@ include Makefile.help
 
 # Build the Docker image
 build:
-	@echo "Building Docker image..."
+	@printf "$(COLOR_BLUE)$(SYM_ARROW) Building Docker image...$(COLOR_RESET)\n"
 	@if [ "$(MULTIPLATFORM)" = "true" ]; then \
-		echo "Building Docker image for multiple platforms..."; \
+		printf "$(COLOR_BLUE)$(SYM_ARROW) Building for multiple platforms...$(COLOR_RESET)\n" && \
 		docker buildx build --platform $(BUILD_PLATFORMS) -t $(DOCKER_IMAGE) .; \
 	else \
-		echo "Building Docker image for the local platform..."; \
+		printf "$(COLOR_BLUE)$(SYM_ARROW) Building for local platform...$(COLOR_RESET)\n" && \
 		docker build -t $(DOCKER_IMAGE) .; \
-	fi
-	@echo "Docker image build completed."
+	fi && \
+	printf "$(COLOR_GREEN)$(SYM_SUCCESS) Docker image build completed$(COLOR_RESET)\n" || \
+	{ printf "$(COLOR_RED)$(SYM_ERROR) Docker build failed$(COLOR_RESET)\n"; exit 1; }
 
 # Run Docker container (supports interactive mode)
 run: clean
-	@echo "Running Docker container..."
+	@printf "$(COLOR_BLUE)$(SYM_ARROW) Running Docker container...$(COLOR_RESET)\n"
 
 	@if [ ! -f $(ENV_FILE) ]; then \
-		echo "Creating environment file..."; \
+		printf "$(COLOR_YELLOW)$(SYM_WARNING) Creating environment file...$(COLOR_RESET)\n" && \
 		touch $(ENV_FILE); \
 	else \
-		echo "Environment file exists..."; \
+		printf "$(COLOR_BLUE)$(SYM_ARROW) Using existing environment file$(COLOR_RESET)\n"; \
 	fi
 
 	@docker run $(if $(INTERACTIVE),-it,-d) --rm --name $(CONTAINER_NAME) \
 		--env-file $(ENV_FILE) \
 		-p $(HOST_PORT):$(CONTAINER_PORT) \
 		$(foreach vol,$(VOLUMES),-v $(vol)) \
-		$(DOCKER_IMAGE) $(COMMAND)
+		$(DOCKER_IMAGE) $(CMD) && \
+	printf "$(COLOR_GREEN)$(SYM_SUCCESS) Container started successfully$(COLOR_RESET)\n" || \
+	{ printf "$(COLOR_RED)$(SYM_ERROR) Failed to start container$(COLOR_RESET)\n"; exit 1; }
 	@$(MAKE) wait-container-ready
 	
 
 # Run Docker container in interactive mode
 run-it:
+	@printf "$(COLOR_BLUE)$(SYM_ARROW) Starting interactive container...$(COLOR_RESET)\n"
 	@$(MAKE) run INTERACTIVE=true CMD="/bin/bash"
 
 # Execute a command in the running container
 exec:
-	@echo "Executing into Docker container..."
-	@docker exec -it $(CONTAINER_NAME) /bin/bash
+	@printf "$(COLOR_BLUE)$(SYM_ARROW) Executing into container...$(COLOR_RESET)\n"
+	@docker exec -it $(CONTAINER_NAME) /bin/bash || \
+		{ printf "$(COLOR_RED)$(SYM_ERROR) Failed to execute into container$(COLOR_RESET)\n"; exit 1; }
+	@printf "$(COLOR_GREEN)$(SYM_SUCCESS) Successfully executed into container$(COLOR_RESET)\n"
 
 # View the container logs
 log:
-	@echo "Viewing Docker container logs..."
-	@docker logs $(CONTAINER_NAME) || echo "No running container to log."
+	@printf "$(COLOR_BLUE)$(SYM_ARROW) Fetching container logs...$(COLOR_RESET)\n"
+	@if [ "$(FOLLOW_LOGS)" = "true" ]; then \
+		docker logs -f $(CONTAINER_NAME) || \
+			{ printf "$(COLOR_RED)$(SYM_ERROR) Failed to retrieve logs$(COLOR_RESET)\n"; exit 1; }; \
+	else \
+		docker logs $(CONTAINER_NAME) || \
+			{ printf "$(COLOR_RED)$(SYM_ERROR) Failed to retrieve logs$(COLOR_RESET)\n"; exit 1; }; \
+	fi
+	@printf "$(COLOR_GREEN)$(SYM_SUCCESS) Logs retrieved successfully$(COLOR_RESET)\n"
 
 # Stop and remove the running container if it exists
 clean:
-	@echo "Stopping and removing Docker container if it exists..."
-	@docker rm -f $(CONTAINER_NAME) || true
+	@printf "$(COLOR_BLUE)$(SYM_ARROW) Cleaning up containers...$(COLOR_RESET)\n"
+	@docker stop $(CONTAINER_NAME) 2>/dev/null || true
+	@docker rm -f $(CONTAINER_NAME) 2>/dev/null || true
+	@printf "$(COLOR_GREEN)$(SYM_SUCCESS) Cleanup completed$(COLOR_RESET)\n"
 
 # Wait for container to be ready (using HTTP readiness check on NGINX)
 wait-container-ready:
-	@echo "Waiting for the container to be ready..."
+	@printf "$(COLOR_BLUE)$(SYM_ARROW) Waiting for container readiness...$(COLOR_RESET)\n"
 	@counter=0; \
 	while ! curl -s -o /dev/null -w "%{http_code}" http://localhost:$(HOST_PORT) | grep -q "200"; do \
 		if [ $$counter -ge 30 ]; then \
-			echo "Timeout: Services did not start"; \
-			echo "Displaying NGINX logs for troubleshooting:"; \
-			docker logs $(CONTAINER_NAME) || echo "No logs available"; \
+			printf "$(COLOR_RED)$(SYM_ERROR) Timeout: Services did not start$(COLOR_RESET)\n"; \
+			printf "$(COLOR_YELLOW)$(SYM_WARNING) Displaying NGINX logs for troubleshooting:$(COLOR_RESET)\n"; \
+			docker logs $(CONTAINER_NAME) || printf "$(COLOR_RED)$(SYM_ERROR) No logs available$(COLOR_RESET)\n"; \
 			exit 1; \
 		fi; \
-		echo "Waiting for services to be ready..."; \
+		printf "$(COLOR_BLUE)$(SYM_ARROW) Waiting for services to be ready...$(COLOR_RESET)\n"; \
 		sleep 5; \
 		counter=$$((counter + 1)); \
 	done
-	@echo "Container is ready."
+	@printf "$(COLOR_GREEN)$(SYM_SUCCESS) Container is ready$(COLOR_RESET)\n"
 
 # Run a specific test script (specified by TEST_SCRIPT)
 run-test:
@@ -81,22 +96,23 @@ run-test:
 
 # Run all tests in the tests directory
 run-all-tests: clean
-	@echo "Starting Docker container for test execution..."
+	@printf "$(COLOR_BLUE)$(SYM_ARROW) Starting test container...$(COLOR_RESET)\n"
 	@docker run -d --name $(CONTAINER_NAME) -v $(CURDIR)/$(SRC_PATH):$(CONTAINER_SRC_PATH) -p $(HOST_PORT):$(CONTAINER_PORT) $(DOCKER_IMAGE)
 	@$(MAKE) wait-container-ready
-	@echo "Executing all test scripts..."
+	@printf "$(COLOR_BLUE)$(SYM_ARROW) Executing all test scripts...$(COLOR_RESET)\n"
 	@for test_script in $(SRC_PATH)/tests/*.php; do \
-		echo "Running $$(basename $$test_script)..."; \
-		docker exec $(CONTAINER_NAME) php $(CONTAINER_SRC_PATH)/tests/$$(basename $$test_script) || echo "Test $$(basename $$test_script) failed"; \
+		printf "$(COLOR_BLUE)$(SYM_ARROW) Running $$(basename $$test_script)...$(COLOR_RESET)\n"; \
+		docker exec $(CONTAINER_NAME) php $(CONTAINER_SRC_PATH)/tests/$$(basename $$test_script) && \
+		printf "$(COLOR_GREEN)$(SYM_SUCCESS) Test $$(basename $$test_script) passed$(COLOR_RESET)\n" || \
+		{ printf "$(COLOR_RED)$(SYM_ERROR) Test $$(basename $$test_script) failed$(COLOR_RESET)\n"; exit 1; }; \
 	done
-	@echo "Stopping and removing Docker container..."
-	@docker rm -f $(CONTAINER_NAME)
-	@echo "All tests completed."
+	@$(MAKE) clean
+	@printf "$(COLOR_GREEN)$(SYM_SUCCESS) All tests completed successfully$(COLOR_RESET)\n"
 
 # Run the validation tests (build and run-all-tests)
 test: build run-all-tests
-	@echo "Validation tests completed."
+	@printf "$(COLOR_GREEN)$(SYM_SUCCESS) Validation tests completed successfully$(COLOR_RESET)\n"
 
 # Development pipeline (build and test)
 dev-pipeline: build test
-	@echo "Development pipeline completed successfully."
+	@printf "$(COLOR_GREEN)$(SYM_SUCCESS) Development pipeline completed successfully$(COLOR_RESET)\n"
