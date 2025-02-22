@@ -41,7 +41,7 @@ if [ -f "${PHP_POOL_CONFIG}" ]; then
     echo "   [www]           "
     # Rest of the configuration
     grep -v '^;' "${PHP_POOL_CONFIG}" | grep -v '^$' | grep -v '\[www\]' | while IFS='=' read -r key value; do
-        if [ ! -z "$key" ]; then
+        if [ -n "$key" ]; then
             printf "   %-15s %s\n" "${key// /}" "${value// /}"
         fi
     done
@@ -60,4 +60,4 @@ echo "   Error log      ${PHP_ERROR_LOG}"
 
 # Start PHP-FPM
 echo " * Starting PHP-FPM..."
-exec php-fpm${PHP_VERSION} --nodaemonize --fpm-config "${PHP_FPM_CONFIG}"
+exec php-fpm"${PHP_VERSION}" --nodaemonize --fpm-config "${PHP_FPM_CONFIG}"

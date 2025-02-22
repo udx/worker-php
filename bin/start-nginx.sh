@@ -51,7 +51,6 @@ if ! kill -0 $NGINX_PID 2>/dev/null; then
 fi
 
 # Log successful start with PID and paths
-START_TIME=$(date +%s)
 echo "✅ Service: NGINX is running"
 echo "   PID             $NGINX_PID"
 echo "   Started at      $(date '+%Y-%m-%d %H:%M:%S')"
