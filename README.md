@@ -1,22 +1,26 @@
 # UDX Worker PHP
 
-A versatile Docker image for running PHP applications with NGINX and PHP-FPM, providing a ready-to-use environment to deploy and serve your PHP projects.
+[![Docker Pulls](https://img.shields.io/docker/pulls/usabilitydynamics/udx-worker-php.svg)](https://hub.docker.com/r/usabilitydynamics/udx-worker-php) [![License](https://img.shields.io/github/license/udx/worker-php.svg)](LICENSE)
 
-## Overview
+**A versatile Docker image for running PHP applications with NGINX and PHP-FPM, providing a ready-to-use environment to deploy and serve your PHP projects.**
+
+[Quick Start](#-quick-start) • [Development](#-development) • [Deployment](#-deployment) • [Contributing](#-contributing)
+
+## 🚀 Overview
 
 The image is designed as a general-purpose base for PHP application development and deployment. It includes essential configurations for NGINX and PHP-FPM to streamline your setup, making it easy to get started with popular frameworks and custom applications alike.
 
-### Based on udx-worker
+### 🔧 Based on udx-worker
 
-Built on `udx-worker`, this image benefits from secure, resource-efficient configurations and best practices, providing a reliable foundation for PHP applications.
+Built on [`udx-worker`](https://github.com/udx/worker), this image benefits from secure, resource-efficient configurations and best practices, providing a reliable foundation for PHP applications.
 
-## Development
+## 👨‍💻 Development
 
-### Prerequisites
+### 📋 Prerequisites
 
 - Ensure `Docker` is installed and running on your system.
 
-### Quick Start
+### 🚀 Quick Start
 
 This image serves as a base for your PHP applications. The `src/tests/` directory includes sample tests for verifying PHP and NGINX functionality, but it does not contain application code by default.
 
@@ -43,7 +47,7 @@ make run-all-tests
 
 You can add additional tests in the `src/tests/` directory as needed.
 
-## Deployment
+## 🚀 Deployment
 
 ### Deploying Using the Pre-Built Image
 
@@ -99,7 +103,7 @@ APP_PATH=/path/to/your-php-app make run
 - Replace `/path/to/your-php-app` with the path to your PHP application directory.
 - This command will mount your specified application directory into the container’s `/var/www` directory, allowing you to run your custom application directly.
 
-## Configuration
+## ⚙️ Configuration
 
 You can configure build and runtime variables in `Makefile.variables`:
 
@@ -109,7 +113,7 @@ You can configure build and runtime variables in `Makefile.variables`:
 
 Adjust these variables to suit your environment or specific deployment requirements.
 
-## Makefile Commands Helper
+## 🛠️ Makefile Commands Helper
 
 Use make to view all available commands:
 
@@ -118,3 +122,33 @@ make help
 ```
 
 These commands offer options for building, running, and testing your application seamlessly.
+
+## 🤝 Contributing
+We welcome contributions! Here's how you can help:
+
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to your branch
+5. Open a Pull Request
+
+Please ensure your PR:
+- Follows our coding standards
+- Includes appropriate tests
+- Updates relevant documentation
+
+## 🔗 Resources
+- [Docker Hub](https://hub.docker.com/r/usabilitydynamics/udx-worker-php)
+- [Product Page](https://udx.io/products/udx-worker-php)
+
+## 🎯 Custom Development
+Need specific features or customizations?
+[Contact our team](https://udx.io/) for professional development services.
+
+## 📄 License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+<div align="center">
+Built with ❤️ by <a href="https://udx.io">UDX</a>
+</div>
