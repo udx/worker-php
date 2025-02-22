@@ -1,5 +1,5 @@
 # Use the UDX worker as the base image
-FROM usabilitydynamics/udx-worker:0.14.0
+FROM usabilitydynamics/udx-worker:0.15.0
 
 # Add metadata labels
 LABEL maintainer="UDX"
@@ -12,7 +12,8 @@ ARG NGINX_VERSION=1.26.3-2ubuntu1
 
 # Set the PHP_VERSION as an environment variable
 ENV PHP_VERSION="${PHP_VERSION}"
-ENV HOME="/var/www"
+# Standard directories for PHP application
+ENV APP_HOME="/var/www"
 
 # Temporarily switch to root for package installation
 USER root
@@ -29,8 +30,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
     mkdir -p /var/log/php /var/log/nginx /run/php /tmp /var/lib/nginx/body && \
     touch /var/log/php/fpm.log && \
-    chown -R "${USER}:${USER}" /var/log/php /var/log/nginx /run/php /tmp /var/lib/nginx $HOME && \
-    chmod -R 755 /var/log/php /var/log/nginx /run/php /tmp /var/lib/nginx $HOME
+    chown -R "${USER}:${USER}" /var/log/php /var/log/nginx /run/php /tmp /var/lib/nginx $APP_HOME && \
+    chmod -R 755 /var/log/php /var/log/nginx /run/php /tmp /var/lib/nginx $APP_HOME
 
 # Copy NGINX and PHP configurations
 COPY etc/configs/nginx/nginx.conf /etc/nginx/nginx.conf
@@ -58,14 +59,17 @@ COPY ./bin/start-nginx.sh /usr/local/bin/start-nginx.sh
 COPY ./bin/start-php-fpm.sh /usr/local/bin/start-php-fpm.sh
 RUN chmod +x /usr/local/bin/start-nginx.sh /usr/local/bin/start-php-fpm.sh
 
-# Copy services configuration
-COPY etc/configs/worker/services.yaml /usr/local/configs/worker/services.yaml
+# Copy services configuration to standard worker config directory
+COPY etc/configs/worker/services.yaml $HOME/.config/worker/services.yaml
 
 # Revert to non-root user
 USER "${USER}"
 
-# Set volumes, working directory, and default command
-VOLUME [ $HOME ]
-WORKDIR $HOME
+# Define volumes for both application and worker data
+VOLUME [ "$APP_HOME" ]
 
+# Set working directory to standard PHP application location
+WORKDIR $APP_HOME
+
+# Keep container running
 CMD ["tail", "-f", "/dev/null"]
