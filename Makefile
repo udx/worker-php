@@ -35,7 +35,7 @@ run: clean
 		--env-file $(ENV_FILE) \
 		-p $(HOST_PORT):$(CONTAINER_PORT) \
 		$(foreach vol,$(VOLUMES),-v $(vol)) \
-		$(DOCKER_IMAGE) $(CMD) && \
+		$(DOCKER_IMAGE) && \
 	printf "$(COLOR_GREEN)$(SYM_SUCCESS) Container started successfully$(COLOR_RESET)\n" || \
 	{ printf "$(COLOR_RED)$(SYM_ERROR) Failed to start container$(COLOR_RESET)\n"; exit 1; }
 	@$(MAKE) wait-container-ready
