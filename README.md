@@ -107,7 +107,7 @@ APP_PATH=/path/to/your-php-app make run
 
 You can configure build and runtime variables in `Makefile.variables`:
 
-- PHP and NGINX versions. _(Only PHP8.3 supported for now)_
+- PHP and NGINX versions. _(Only PHP8.4 supported for now)_
 - Port mappings
 - Source paths
 
