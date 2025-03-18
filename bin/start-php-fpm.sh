@@ -2,7 +2,7 @@
 set -e
 
 # Default configuration
-PHP_VERSION=${PHP_VERSION:-"8.3"}
+PHP_VERSION=${PHP_VERSION:-"8.4"}
 PHP_CONFIG_DIR=${PHP_CONFIG_DIR:-"/etc/php/${PHP_VERSION}"}
 
 # Read paths from config files
