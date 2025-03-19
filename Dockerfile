@@ -1,9 +1,9 @@
 # Use the UDX worker as the base image
-FROM usabilitydynamics/udx-worker:0.16.0
+FROM usabilitydynamics/udx-worker:0.17.0
 
 # Add metadata labels
 LABEL maintainer="UDX"
-LABEL version="0.12.0"
+LABEL version="0.13.0"
 
 # Arguments and Environment Variables
 ARG PHP_VERSION=8.4
@@ -27,7 +27,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     php"${PHP_VERSION}"-curl="${PHP_PACKAGE_VERSION}" \
     php"${PHP_VERSION}"-xml="${PHP_PACKAGE_VERSION}" \
     php"${PHP_VERSION}"-zip="${PHP_PACKAGE_VERSION}" && \
-    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
+    apt-get clean && \
+    rm -rf /tmp/* /var/tmp/* && \
+    mkdir -p /etc/apt/sources.list.d && \
+    chmod 755 /etc/apt/sources.list.d && \
     mkdir -p /var/log/php /var/log/nginx /run/php /tmp /var/lib/nginx/body && \
     touch /var/log/php/fpm.log && \
     chown -R "${USER}:${USER}" /var/log/php /var/log/nginx /run/php /tmp /var/lib/nginx $APP_HOME && \

@@ -150,5 +150,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 <div align="center">
-Built with ❤️ by <a href="https://udx.io">UDX</a>
+Built by <a href="https://udx.io">UDX</a> © 2025
 </div>
