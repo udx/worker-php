@@ -1,5 +1,5 @@
 # Use the UDX worker as the base image
-FROM usabilitydynamics/udx-worker:0.20.0
+FROM usabilitydynamics/udx-worker:0.21.0
 
 # Add metadata labels
 LABEL maintainer="UDX"
@@ -8,7 +8,7 @@ LABEL version="0.16.0"
 # Arguments and Environment Variables
 ARG PHP_VERSION=8.4
 ARG PHP_PACKAGE_VERSION=8.4.5-1ubuntu1	
-ARG NGINX_VERSION=1.26.3-2ubuntu1
+ARG NGINX_VERSION=1.26.3-2ubuntu1.1
 
 # Set the PHP_VERSION and PHP_PACKAGE_VERSION as environment variables
 ENV PHP_VERSION="${PHP_VERSION}"
