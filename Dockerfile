@@ -1,9 +1,9 @@
 # Use the UDX worker as the base image
-FROM usabilitydynamics/udx-worker:0.21.0
+FROM usabilitydynamics/udx-worker:0.22.0
 
 # Add metadata labels
 LABEL maintainer="UDX"
-LABEL version="0.16.0"
+LABEL version="0.20.0"
 
 # Arguments and Environment Variables
 ARG PHP_VERSION=8.4
@@ -19,7 +19,7 @@ ENV APP_HOME="/var/www"
 # Temporarily switch to root for package installation
 USER root
 
-# Install NGINX, PHP, clean up, and set up directories and permissions in one step
+# Install dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     nginx="${NGINX_VERSION}" \
     php"${PHP_VERSION}"-fpm="${PHP_PACKAGE_VERSION}" \
@@ -27,7 +27,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     php"${PHP_VERSION}"-mysql="${PHP_PACKAGE_VERSION}" \
     php"${PHP_VERSION}"-curl="${PHP_PACKAGE_VERSION}" \
     php"${PHP_VERSION}"-xml="${PHP_PACKAGE_VERSION}" \
-    php"${PHP_VERSION}"-zip="${PHP_PACKAGE_VERSION}" && \
+    php"${PHP_VERSION}"-zip="${PHP_PACKAGE_VERSION}" \
+    mysql-client=8.4.4-0ubuntu2 && \
     apt-get clean && \
     rm -rf /tmp/* /var/tmp/* && \
     mkdir -p /etc/apt/sources.list.d && \
