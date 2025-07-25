@@ -3,11 +3,11 @@ FROM usabilitydynamics/udx-worker:0.22.0
 
 # Add metadata labels
 LABEL maintainer="UDX"
-LABEL version="0.20.0"
+LABEL version="0.21.0"
 
 # Arguments and Environment Variables
 ARG PHP_VERSION=8.4
-ARG PHP_PACKAGE_VERSION=8.4.5-1ubuntu1	
+ARG PHP_PACKAGE_VERSION=8.4.5-1ubuntu1.1
 ARG NGINX_VERSION=1.26.3-2ubuntu1.1
 
 # Set the PHP_VERSION and PHP_PACKAGE_VERSION as environment variables
@@ -28,7 +28,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     php"${PHP_VERSION}"-curl="${PHP_PACKAGE_VERSION}" \
     php"${PHP_VERSION}"-xml="${PHP_PACKAGE_VERSION}" \
     php"${PHP_VERSION}"-zip="${PHP_PACKAGE_VERSION}" \
-    mysql-client=8.4.4-0ubuntu2 && \
+    mysql-client=8.4.5-0ubuntu0.2 && \
     apt-get clean && \
     rm -rf /tmp/* /var/tmp/* && \
     mkdir -p /etc/apt/sources.list.d && \
