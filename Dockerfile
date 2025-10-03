@@ -3,7 +3,7 @@ FROM usabilitydynamics/udx-worker:0.24.0
 
 # Add metadata labels
 LABEL maintainer="UDX"
-LABEL version="0.23.0"
+LABEL version="0.24.0"
 
 # Arguments and Environment Variables
 ARG PHP_VERSION=8.4
