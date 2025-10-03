@@ -8,7 +8,7 @@ LABEL version="0.23.0"
 # Arguments and Environment Variables
 ARG PHP_VERSION=8.4
 ARG PHP_PACKAGE_VERSION=8.4.5-1ubuntu1.1
-ARG NGINX_VERSION=1.26.3-2ubuntu1.1
+ARG NGINX_VERSION=1.26.3-2ubuntu1.2
 
 # Set the PHP_VERSION and PHP_PACKAGE_VERSION as environment variables
 ENV PHP_VERSION="${PHP_VERSION}"
@@ -28,7 +28,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     php"${PHP_VERSION}"-curl="${PHP_PACKAGE_VERSION}" \
     php"${PHP_VERSION}"-xml="${PHP_PACKAGE_VERSION}" \
     php"${PHP_VERSION}"-zip="${PHP_PACKAGE_VERSION}" \
-    mysql-client=8.4.5-0ubuntu0.2 && \
+    mysql-client=8.4.6-0ubuntu0.25.04.3 && \
     apt-get clean && \
     rm -rf /tmp/* /var/tmp/* && \
     mkdir -p /etc/apt/sources.list.d && \
@@ -53,7 +53,7 @@ RUN sed -i "s|\${PHP_VERSION}|${PHP_VERSION}|g" /etc/nginx/snippets/fastcgi-php"
     echo "include=/etc/php/${PHP_VERSION}/fpm/pool.d/*.conf" >> /etc/php/"${PHP_VERSION}"/fpm/php-fpm.conf
 
 # Set PHP-FPM socket permissions in the configuration
-RUN sed -i "s|^error_log =.*|error_log = /var/log/php/fpm.log|" /etc/php/"${PHP_VERSION}"/fpm/php-fpm.conf && \
+RUN sed -i "s|^error_log =.*|error_log = /dev/stderr|" /etc/php/"${PHP_VERSION}"/fpm/php-fpm.conf && \
     sed -i "s|^listen.owner =.*|listen.owner = ${USER}|" /etc/php/"${PHP_VERSION}"/fpm/pool.d/www.conf && \
     sed -i "s|^listen.group =.*|listen.group = ${USER}|" /etc/php/"${PHP_VERSION}"/fpm/pool.d/www.conf && \
     sed -i "s|^listen.mode =.*|listen.mode = 0660|" /etc/php/"${PHP_VERSION}"/fpm/pool.d/www.conf && \
