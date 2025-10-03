@@ -60,4 +60,4 @@ echo "   Error log      ${PHP_ERROR_LOG}"
 
 # Start PHP-FPM
 echo " * Starting PHP-FPM..."
-exec php-fpm"${PHP_VERSION}" --nodaemonize --fpm-config "${PHP_FPM_CONFIG}"
+exec php-fpm"${PHP_VERSION}" --nodaemonize --fpm-config "${PHP_FPM_CONFIG}" 2>&1
