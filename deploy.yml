@@ -24,4 +24,4 @@ config:
   # command: "/usr/local/bin/init.sh"
 
   # service_account:
-  #   email: "test-sql-backup@udx-io-254202.iam.gserviceaccount.com"
+  #   email: ""
