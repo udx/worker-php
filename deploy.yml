@@ -10,18 +10,9 @@ config:
   # Docker image
   image: "usabilitydynamics/udx-worker-php:latest"
 
-  # env:
-  #   ACTORS_CLEANUP: false
-
   # Mount volumes
   volumes:
     - "./src/scripts:/var/www"
 
   ports:
     - "80:80"
-
-  # Command to run
-  # command: "/usr/local/bin/init.sh"
-
-  # service_account:
-  #   email: ""

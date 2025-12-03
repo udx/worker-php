@@ -1,9 +1,9 @@
 # Use the UDX worker as the base image
-FROM usabilitydynamics/udx-worker:0.33.0
+FROM usabilitydynamics/udx-worker:0.34.0
 
 # Add metadata labels
 LABEL maintainer="UDX"
-LABEL version="0.28.0"
+LABEL version="0.29.0"
 
 # Arguments and Environment Variables
 ARG PHP_VERSION=8.4
