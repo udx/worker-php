@@ -1,14 +1,14 @@
 # Use the UDX worker as the base image
-FROM usabilitydynamics/udx-worker:0.34.0
+FROM usabilitydynamics/udx-worker:0.35.0
 
 # Add metadata labels
 LABEL maintainer="UDX"
-LABEL version="0.29.0"
+LABEL version="0.30.0"
 
 # Arguments and Environment Variables
 ARG PHP_VERSION=8.4
-ARG PHP_PACKAGE_VERSION=8.4.5-1ubuntu1.1
-ARG NGINX_VERSION=1.26.3-2ubuntu1.2
+ARG PHP_PACKAGE_VERSION=8.4.11-1ubuntu1
+ARG NGINX_VERSION=1.28.0-6ubuntu1
 
 # Set the PHP_VERSION and PHP_PACKAGE_VERSION as environment variables
 ENV PHP_VERSION="${PHP_VERSION}"
@@ -28,7 +28,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     php"${PHP_VERSION}"-curl="${PHP_PACKAGE_VERSION}" \
     php"${PHP_VERSION}"-xml="${PHP_PACKAGE_VERSION}" \
     php"${PHP_VERSION}"-zip="${PHP_PACKAGE_VERSION}" \
-    mysql-client=8.4.7-0ubuntu0.25.04.1 && \
+    mysql-client=8.4.7-0ubuntu0.25.10.2 && \
     apt-get clean && \
     rm -rf /tmp/* /var/tmp/* && \
     mkdir -p /etc/apt/sources.list.d && \
