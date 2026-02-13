@@ -1,7 +1,7 @@
 # npm install -g @udx/worker-deployment
 # gcloud auth login
 # gcloud auth application-default login
-# worker-run
+# worker run
 
 ---
 kind: workerDeployConfig
