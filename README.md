@@ -1,154 +1,160 @@
+<img src="assets/logo.svg" alt="UDX Worker PHP">
+
 # UDX Worker PHP
 
-[![Docker Pulls](https://img.shields.io/docker/pulls/usabilitydynamics/udx-worker-php.svg)](https://hub.docker.com/r/usabilitydynamics/udx-worker-php) [![License](https://img.shields.io/github/license/udx/worker-php.svg)](LICENSE)
+[![Docker Pulls](https://img.shields.io/docker/pulls/usabilitydynamics/udx-worker-php.svg)](https://hub.docker.com/r/usabilitydynamics/udx-worker-php)
+[![License](https://img.shields.io/github/license/udx/worker-php.svg)](LICENSE)
 
-**A versatile Docker image for running PHP applications with NGINX and PHP-FPM, providing a ready-to-use environment to deploy and serve your PHP projects.**
+PHP runtime image built on UDX Worker with NGINX + PHP-FPM preconfigured.
 
-[Quick Start](#-quick-start) • [Development](#-development) • [Deployment](#-deployment) • [Contributing](#-contributing)
+[Quick Start](#quick-start) • [Usage](#usage) • [Development](#development) • [Resources](#resources)
 
-## 🚀 Overview
+## Overview
 
-The image is designed as a general-purpose base for PHP application development and deployment. It includes essential configurations for NGINX and PHP-FPM to streamline your setup, making it easy to get started with popular frameworks and custom applications alike.
+`udx-worker-php` extends [`udx/worker`](https://github.com/udx/worker) and keeps the same worker runtime model while adding:
 
-### 🔧 Based on udx-worker
+- NGINX configured for `/var/www`
+- PHP-FPM (`8.4`) with socket-based NGINX integration
+- Worker service definitions that autostart both `php-fpm` and `nginx`
 
-Built on [`udx-worker`](https://github.com/udx/worker), this image benefits from secure, resource-efficient configurations and best practices, providing a reliable foundation for PHP applications.
+This image is intended as a base runtime for PHP applications and PHP-focused automation workloads.
 
-## 👨‍💻 Development
+## Quick Start
 
-### 📋 Prerequisites
+Requirements: Docker (and Make if you want local dev commands).
 
-- Ensure `Docker` is installed and running on your system.
+### Run from Docker Hub
 
-### 🚀 Quick Start
-
-This image serves as a base for your PHP applications. The `src/tests/` directory includes sample tests for verifying PHP and NGINX functionality, but it does not contain application code by default.
-
-### Running Built-In Tests
-
-1. Clone this repository:
-
-```
-git clone https://github.com/udx/udx-worker-php.git
-cd udx-worker-php
-```
-
-2. Build the Docker image:
-
-```
-make build
-```
-
-3. Run Tests to verify functionality:
-
-```
-make run-all-tests
-```
-
-You can add additional tests in the `src/tests/` directory as needed.
-
-## 🚀 Deployment
-
-### Deploying Using the Pre-Built Image
-
-If you want to use the pre-built image directly from Docker Hub without cloning the repository:
-
-1. Pull the Image:
-
-```
-docker pull usabilitydynamics/udx-worker-php:latest
-```
-
-2. Run the container with your application code:
-
-```
-docker run -d --name my-php-app \
-  -v $(pwd)/my-php-app:/var/www \
+```bash
+docker run -d \
+  --name my-php-app \
   -p 80:80 \
+  -v "$(pwd)/my-php-app:/var/www" \
   usabilitydynamics/udx-worker-php:latest
 ```
 
-This serves your application at http://localhost.
+Then open `http://localhost` (or your mapped host port).
 
-3. Stop and remove the container when done:
+### Local Development Workflow
 
-```
-docker rm -f my-php-app
-```
+```bash
+git clone https://github.com/udx/worker-php.git
+cd worker-php
 
-### Deploying Using a Locally Built Image (Makefile Approach)
-
-If you’ve cloned this repository and built the image locally, you can use the provided Makefile targets:
-
-1. Build the Image (if not already built):
-
-```
 make build
-```
-
-2. Run the Container:
-
-```
 make run
+make log FOLLOW_LOGS=true
 ```
 
-By default, this command runs the container with the code located in the `src/` directory of this repository.
+`make run` uses these defaults from `Makefile.variables`:
 
-3. Deploy Application Code. If your PHP application code is located in a different directory or repository, use the deploy target to mount it as a volume:
+- volume: `./src/scripts:/var/www`
+- host/container port: `80:80`
+- env file: `.env`
 
+## Usage
+
+### Mount your own app code
+
+```bash
+make run VOLUMES="$(pwd)/path-to-app:/var/www" HOST_PORT=8080
 ```
-APP_PATH=/path/to/your-php-app make run
+
+### Run interactively
+
+```bash
+make run-it
 ```
 
-- Replace `/path/to/your-php-app` with the path to your PHP application directory.
-- This command will mount your specified application directory into the container’s `/var/www` directory, allowing you to run your custom application directly.
+### Execute into the running container
 
-## ⚙️ Configuration
-
-You can configure build and runtime variables in `Makefile.variables`:
-
-- PHP and NGINX versions. _(Only PHP8.4 supported for now)_
-- Port mappings
-- Source paths
-
-Adjust these variables to suit your environment or specific deployment requirements.
-
-## 🛠️ Makefile Commands Helper
-
-Use make to view all available commands:
-
+```bash
+make exec
 ```
+
+### Deploy with Worker CLI config
+
+This repo includes a sample `deploy.yml` for [`@udx/worker-deployment`](https://www.npmjs.com/package/@udx/worker-deployment).
+
+```bash
+npm install -g @udx/worker-deployment
+worker run
+```
+
+## Testing
+
+Run all built-in tests:
+
+```bash
+make run-all-tests
+```
+
+Run full validation (build + tests):
+
+```bash
+make test
+```
+
+Run a specific test script:
+
+```bash
+make run-test TEST_SCRIPT=10_nginx_test.php
+```
+
+Current tests live in `src/tests/` and cover:
+
+- NGINX HTTP response
+- PHP runtime availability
+- CLI execution
+- write permissions under `/var/www`
+
+## Configuration
+
+Primary defaults are in `Makefile.variables`:
+
+- `DOCKER_IMAGE`
+- `CONTAINER_NAME`
+- `HOST_PORT` / `CONTAINER_PORT`
+- `VOLUMES`
+- `PHP_VERSION`
+
+Container/runtime config files:
+
+- `etc/configs/nginx/default.conf`
+- `etc/configs/php/php-fpm.conf`
+- `etc/configs/php/www.conf`
+- `etc/configs/worker/services.yaml`
+
+## Development
+
+Useful commands:
+
+```bash
 make help
+make build
+make run
+make log
+make clean
+make test
 ```
 
-These commands offer options for building, running, and testing your application seamlessly.
+## Resources
 
-## 🤝 Contributing
-We welcome contributions! Here's how you can help:
+- Docker Hub: https://hub.docker.com/r/usabilitydynamics/udx-worker-php
+- Source: https://github.com/udx/worker-php
+- Base runtime docs: https://github.com/udx/worker/tree/latest/docs
+- Deployment config docs: https://github.com/udx/worker-deployment/blob/latest/docs/deploy-config.md
+
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch
 3. Commit your changes
 4. Push to your branch
-5. Open a Pull Request
+5. Open a pull request
 
-Please ensure your PR:
-- Follows our coding standards
-- Includes appropriate tests
-- Updates relevant documentation
+Include relevant tests and documentation updates with your changes.
 
-## 🔗 Resources
-- [Docker Hub](https://hub.docker.com/r/usabilitydynamics/udx-worker-php)
-- [Product Page](https://udx.io/products/udx-worker-php)
+## License
 
-## 🎯 Custom Development
-Need specific features or customizations?
-[Contact our team](https://udx.io/) for professional development services.
-
-## 📄 License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-<div align="center">
-Built by <a href="https://udx.io">UDX</a> © 2025
-</div>
+MIT. See [`LICENSE`](LICENSE).
