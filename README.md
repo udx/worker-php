@@ -3,158 +3,125 @@
 # UDX Worker PHP
 
 [![Docker Pulls](https://img.shields.io/docker/pulls/usabilitydynamics/udx-worker-php.svg)](https://hub.docker.com/r/usabilitydynamics/udx-worker-php)
+[![GitHub Release](https://img.shields.io/github/v/release/udx/worker-php?sort=semver)](https://github.com/udx/worker-php/releases/latest)
 [![License](https://img.shields.io/github/license/udx/worker-php.svg)](LICENSE)
 
-PHP runtime image built on UDX Worker with NGINX + PHP-FPM preconfigured.
+PHP runtime image built on UDX Worker with NGINX and PHP-FPM wired for `/var/www`.
 
-[Quick Start](#quick-start) • [Usage](#usage) • [Development](#development) • [Resources](#resources)
+[Quick Start](#quick-start) - [Runtime](#runtime) - [Development](#development) - [Deployment](#deployment) - [Agent Context](#agent-context)
 
 ## Overview
 
-`udx-worker-php` extends [`udx/worker`](https://github.com/udx/worker) and keeps the same worker runtime model while adding:
+`udx-worker-php` extends [`udx/worker`](https://github.com/udx/worker), published as `usabilitydynamics/udx-worker`, and keeps the worker runtime model while adding a PHP web stack:
 
-- NGINX configured for `/var/www`
-- PHP-FPM (`8.4`) with socket-based NGINX integration
-- Worker service definitions that autostart both `php-fpm` and `nginx`
+- NGINX serves `/var/www`.
+- PHP-FPM runs behind NGINX through a Unix socket.
+- PHP CLI and common extensions are installed for application and automation workloads.
+- Worker service definitions start both `php-fpm` and `nginx`.
 
-This image is intended as a base runtime for PHP applications and PHP-focused automation workloads.
+Use this image as a base for PHP applications, automation jobs, or deployment workflows that need the Worker runtime contract.
 
 ## Quick Start
 
-Requirements: Docker (and Make if you want local dev commands).
+Requirements: Docker. Make is optional but recommended for local development.
 
-### Run from Docker Hub
+Run the published image:
 
 ```bash
 docker run -d \
   --name my-php-app \
-  -p 80:80 \
+  -p 8080:80 \
   -v "$(pwd)/my-php-app:/var/www" \
   usabilitydynamics/udx-worker-php:latest
 ```
 
-Then open `http://localhost` (or your mapped host port).
+Then open `http://localhost:8080`.
 
-### Local Development Workflow
+Build and run locally:
 
 ```bash
 git clone https://github.com/udx/worker-php.git
 cd worker-php
 
 make build
-make run
+make run HOST_PORT=8080
 make log FOLLOW_LOGS=true
 ```
 
-`make run` uses these defaults from `Makefile.variables`:
+`make run` uses defaults from `Makefile.variables`, including `./src/scripts:/var/www` and container port `80`.
 
-- volume: `./src/scripts:/var/www`
-- host/container port: `80:80`
-- env file: `.env`
+This image does not define an application environment contract. Application-specific configuration belongs to the child app or target platform.
 
-## Usage
+## Runtime
 
-### Mount your own app code
+The runtime contract is defined by the Dockerfile and the configs copied into the image:
 
-```bash
-make run VOLUMES="$(pwd)/path-to-app:/var/www" HOST_PORT=8080
-```
+- `Dockerfile` pins the base Worker image and Ubuntu package versions.
+- `etc/configs/nginx/` defines the NGINX server and PHP FastCGI integration.
+- `etc/configs/php/` defines PHP-FPM process and pool behavior.
+- `etc/configs/worker/services.yaml` declares Worker-managed services.
 
-### Run interactively
+`/var/www` is both the declared volume and working directory. NGINX sends PHP requests to the PHP-FPM Unix socket configured during the image build.
 
-```bash
-make run-it
-```
+## Development
 
-### Execute into the running container
+Common commands:
 
 ```bash
+make help
+make build
+make run HOST_PORT=8080
 make exec
+make log
+make clean
 ```
 
-### Deploy with Worker CLI config
-
-This repo includes a sample `deploy.yml` for [`@udx/worker-deployment`](https://www.npmjs.com/package/@udx/worker-deployment).
+Run all validation:
 
 ```bash
-npm install -g @udx/worker-deployment
-worker run
+make test
 ```
 
-## Testing
-
-Run all built-in tests:
+Run only the container test suite against an already built image:
 
 ```bash
 make run-all-tests
 ```
 
-Run full validation (build + tests):
-
-```bash
-make test
-```
-
-Run a specific test script:
+Run one test script:
 
 ```bash
 make run-test TEST_SCRIPT=10_nginx_test.php
 ```
 
-Current tests live in `src/tests/` and cover:
+Current tests live in `src/tests/` and cover NGINX HTTP response, PHP runtime availability, PHP CLI execution, and write permissions under `/var/www`.
 
-- NGINX HTTP response
-- PHP runtime availability
-- CLI execution
-- write permissions under `/var/www`
+## Deployment
 
-## Configuration
+Deployment uses the host-native tool for the target environment. Mount application code at `/var/www` and publish container port `80` through the platform.
 
-Primary defaults are in `Makefile.variables`:
+The GitHub release pipeline is declared in `.github/workflows/docker-ops.yml` and delegates Docker publishing to `udx/reusable-workflows`.
 
-- `DOCKER_IMAGE`
-- `CONTAINER_NAME`
-- `HOST_PORT` / `CONTAINER_PORT`
-- `VOLUMES`
-- `PHP_VERSION`
+For dependency upgrades, include the changed base image/packages and the local verification result in the PR description.
 
-Container/runtime config files:
+## Agent Context
 
-- `etc/configs/nginx/default.conf`
-- `etc/configs/php/php-fpm.conf`
-- `etc/configs/php/www.conf`
-- `etc/configs/worker/services.yaml`
+This repo exposes generated agent context in `.rabbit/context.yaml`. Treat it as evidence for agents and automation, not as a hand-authored contract.
 
-## Development
-
-Useful commands:
+Do not edit `.rabbit/context.yaml` manually. After changing source docs, Dockerfile, workflows, or manifests, refresh it with:
 
 ```bash
-make help
-make build
-make run
-make log
-make clean
-make test
+dev.kit repo
 ```
+
+Human-authored repo contracts remain in `README.md`, `Dockerfile`, `Makefile`, and `.github/workflows/`.
 
 ## Resources
 
 - Docker Hub: https://hub.docker.com/r/usabilitydynamics/udx-worker-php
 - Source: https://github.com/udx/worker-php
 - Base runtime docs: https://github.com/udx/worker/tree/latest/docs
-- Deployment config docs: https://github.com/udx/worker-deployment/blob/latest/docs/deploy-config.md
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to your branch
-5. Open a pull request
-
-Include relevant tests and documentation updates with your changes.
 
 ## License
 
-MIT. See [`LICENSE`](LICENSE).
+MIT. See [LICENSE](LICENSE).
