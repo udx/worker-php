@@ -7,8 +7,8 @@ LABEL version="0.31.0"
 
 # Arguments and Environment Variables
 ARG PHP_VERSION=8.4
-ARG PHP_PACKAGE_VERSION=8.4.11-1ubuntu1.1
-ARG NGINX_VERSION=1.28.0-6ubuntu1.1
+ARG PHP_PACKAGE_VERSION=8.4.11-1ubuntu1.2
+ARG NGINX_VERSION=1.28.0-6ubuntu1.8
 
 # Set the PHP_VERSION and PHP_PACKAGE_VERSION as environment variables
 ENV PHP_VERSION="${PHP_VERSION}"
@@ -28,7 +28,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     php"${PHP_VERSION}"-curl="${PHP_PACKAGE_VERSION}" \
     php"${PHP_VERSION}"-xml="${PHP_PACKAGE_VERSION}" \
     php"${PHP_VERSION}"-zip="${PHP_PACKAGE_VERSION}" \
-    mysql-client=8.4.8-0ubuntu0.25.10.1 && \
+    mysql-client=8.4.10-0ubuntu0.25.10.1 && \
     apt-get clean && \
     rm -rf /tmp/* /var/tmp/* && \
     mkdir -p /etc/apt/sources.list.d && \
