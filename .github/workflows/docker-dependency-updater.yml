@@ -134,7 +134,6 @@ jobs:
 
     permissions:
       contents: write
-      issues: write
       pull-requests: write
 
     steps:
@@ -338,7 +337,7 @@ jobs:
         uses: peter-evans/create-pull-request@v8
         timeout-minutes: 5
         with:
-          token: ${{ secrets.DEPENDABOT_REVIEWER_TOKEN || secrets.GH_TOKEN }}
+          token: ${{ secrets.DEPENDABOT_REVIEWER_TOKEN || secrets.GH_TOKEN || github.token }}
           author: udx-github <73100442+udx-github@users.noreply.github.com>
           committer: udx-github <73100442+udx-github@users.noreply.github.com>
           commit-message: ${{ needs.config.outputs.commit_message }}
@@ -374,7 +373,7 @@ jobs:
               ;;
           esac
         env:
-          GH_TOKEN: ${{ secrets.DEPENDABOT_REVIEWER_TOKEN || secrets.GH_TOKEN }}
+          GH_TOKEN: ${{ secrets.DEPENDABOT_REVIEWER_TOKEN || secrets.GH_TOKEN || github.token }}
           MERGE_METHOD: ${{ needs.config.outputs.pr_merge_method }}
           PR_URL: ${{ steps.create-pr.outputs.pull-request-url }}
 
