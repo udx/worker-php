@@ -96,9 +96,9 @@ run-test: clean
 		exit 1; \
 	fi
 	@printf "$(COLOR_BLUE)$(SYM_ARROW) Starting test container...$(COLOR_RESET)\n"
-	@docker run -d --name $(CONTAINER_NAME) -v $(CURDIR)/$(SRC_PATH):$(CONTAINER_SRC_PATH) -p $(HOST_PORT):$(CONTAINER_PORT) $(DOCKER_IMAGE) || \
+	@docker run -d --rm --name $(CONTAINER_NAME) -v $(CURDIR)/$(SRC_PATH):$(CONTAINER_SRC_PATH) -p $(HOST_PORT):$(CONTAINER_PORT) $(DOCKER_IMAGE) || \
 		{ printf "$(COLOR_RED)$(SYM_ERROR) Failed to start test container$(COLOR_RESET)\n"; exit 1; }
-	@$(MAKE) wait-container-ready
+	@$(MAKE) wait-container-ready || { $(MAKE) clean; exit 1; }
 	@printf "$(COLOR_BLUE)$(SYM_ARROW) Running $(TEST_SCRIPT)...$(COLOR_RESET)\n"
 	@docker exec $(CONTAINER_NAME) php $(CONTAINER_SRC_PATH)/tests/$(TEST_SCRIPT) && \
 	printf "$(COLOR_GREEN)$(SYM_SUCCESS) Test $(TEST_SCRIPT) passed$(COLOR_RESET)\n" || \
