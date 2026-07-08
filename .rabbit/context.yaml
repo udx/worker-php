@@ -5,8 +5,8 @@ version: udx.dev/dev.kit/v1
 generator:
   tool: dev.kit
   repo: https://github.com/udx/dev.kit
-  version: 0.14.0
-  generated_at: 2026-07-01T08:30:38Z
+  version: 0.20.0
+  generated_at: 2026-07-08T15:46:44Z
   sources:
     homepage: https://udx.dev/kit
     repository: https://github.com/udx/dev.kit
@@ -25,7 +25,7 @@ repo:
 refs:
   - ./README.md
   - ./Makefile
-  - ./deploy.yml
+  - ./worker.yaml
   - ./.github/workflows
   - ./Dockerfile
   - ./docs
@@ -56,7 +56,6 @@ dependencies:
     kind: reusable workflow
     resolved: true
     archetype: manifest-repo
-    description: Reusable GitHub Actions workflow templates for CI/CD
     used_by:
       - .github/workflows/docker-ops.yml
   - repo: usabilitydynamics/udx-worker:0.45.0
@@ -64,17 +63,15 @@ dependencies:
     resolved: true
     source_repo: udx/worker
     archetype: manifest-repo
-    description: UDX Worker Docker image
     used_by:
       - Dockerfile
   - repo: udx/worker
-    kind: manifest contract (deploy)
+    kind: manifest contract (config)
     resolved: true
-    declared_as: udx.io/worker-v1/deploy
+    declared_as: udx.io/worker-v1/config
     archetype: manifest-repo
-    description: UDX Worker Docker image
     used_by:
-      - deploy.yml
+      - worker.yaml
 
 # Manifests — YAML files that define repo-specific workflow, deploy, or contract behavior.
 # Note: Include custom config/manifests that materially shape repo behavior or contract understanding.
@@ -86,12 +83,23 @@ dependencies:
 manifests:
   - path: .github/workflows/docker-ops.yml
     kind: githubWorkflow
-  - path: deploy.yml
-    kind: workerDeployConfig
-    declared_as: udx.io/worker-v1/deploy
-    source_repo: udx/worker
     used_by:
+      - .rabbit/README.md
       - README.md
     evidence:
-      - version: udx.io/worker-v1/deploy
+      - path reference: .rabbit/README.md
       - path reference: README.md
+  - path: worker.yaml
+    kind: workerConfig
+    declared_as: udx.io/worker-v1/config
+    source_repo: udx/worker
+    used_by:
+      - .rabbit/README.md
+      - README.md
+      - docs/worker-config.md
+    evidence:
+      - version: udx.io/worker-v1/config
+      - github reference: udx/worker
+      - path reference: .rabbit/README.md
+      - path reference: README.md
+      - path reference: docs/worker-config.md

@@ -34,7 +34,7 @@ SRC_PATH := src
 CONTAINER_SRC_PATH := /var/www
 
 # Specific test script name
-TEST_SCRIPT := test.php
+TEST_SCRIPT := 10_nginx_test.php
 
 # Path for all test scripts
 TESTS_PATH := $(CONTAINER_SRC_PATH)/tests
