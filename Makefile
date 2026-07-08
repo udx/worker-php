@@ -91,8 +91,13 @@ wait-container-ready:
 
 # Run a specific test script (specified by TEST_SCRIPT)
 run-test: clean
+	@if [ ! -f "$(SRC_PATH)/tests/$(TEST_SCRIPT)" ]; then \
+		printf "$(COLOR_RED)$(SYM_ERROR) Test script not found: $(SRC_PATH)/tests/$(TEST_SCRIPT)$(COLOR_RESET)\n"; \
+		exit 1; \
+	fi
 	@printf "$(COLOR_BLUE)$(SYM_ARROW) Starting test container...$(COLOR_RESET)\n"
-	@docker run -d --name $(CONTAINER_NAME) -v $(CURDIR)/$(SRC_PATH):$(CONTAINER_SRC_PATH) -p $(HOST_PORT):$(CONTAINER_PORT) $(DOCKER_IMAGE)
+	@docker run -d --name $(CONTAINER_NAME) -v $(CURDIR)/$(SRC_PATH):$(CONTAINER_SRC_PATH) -p $(HOST_PORT):$(CONTAINER_PORT) $(DOCKER_IMAGE) || \
+		{ printf "$(COLOR_RED)$(SYM_ERROR) Failed to start test container$(COLOR_RESET)\n"; exit 1; }
 	@$(MAKE) wait-container-ready
 	@printf "$(COLOR_BLUE)$(SYM_ARROW) Running $(TEST_SCRIPT)...$(COLOR_RESET)\n"
 	@docker exec $(CONTAINER_NAME) php $(CONTAINER_SRC_PATH)/tests/$(TEST_SCRIPT) && \
