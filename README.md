@@ -108,6 +108,8 @@ For dependency upgrades, include the changed base image/packages and the local v
 
 `worker.yaml` follows the base Worker config contract for runtime `config.env` values and `config.secrets` references. Deployment environment variables override values declared in `worker.yaml`.
 
+See [docs/worker-config.md](docs/worker-config.md) for the local config reference.
+
 References:
 
 - https://github.com/udx/worker/blob/latest/docs/config.md

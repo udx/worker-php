@@ -90,9 +90,15 @@ wait-container-ready:
 	@printf "$(COLOR_GREEN)$(SYM_SUCCESS) Container is ready$(COLOR_RESET)\n"
 
 # Run a specific test script (specified by TEST_SCRIPT)
-run-test:
-	@echo "Running test script $(TEST_SCRIPT) ..."
-	@$(MAKE) run CMD="php $(CONTAINER_SRC_PATH)/tests/$(TEST_SCRIPT)"
+run-test: clean
+	@printf "$(COLOR_BLUE)$(SYM_ARROW) Starting test container...$(COLOR_RESET)\n"
+	@docker run -d --name $(CONTAINER_NAME) -v $(CURDIR)/$(SRC_PATH):$(CONTAINER_SRC_PATH) -p $(HOST_PORT):$(CONTAINER_PORT) $(DOCKER_IMAGE)
+	@$(MAKE) wait-container-ready
+	@printf "$(COLOR_BLUE)$(SYM_ARROW) Running $(TEST_SCRIPT)...$(COLOR_RESET)\n"
+	@docker exec $(CONTAINER_NAME) php $(CONTAINER_SRC_PATH)/tests/$(TEST_SCRIPT) && \
+	printf "$(COLOR_GREEN)$(SYM_SUCCESS) Test $(TEST_SCRIPT) passed$(COLOR_RESET)\n" || \
+	{ printf "$(COLOR_RED)$(SYM_ERROR) Test $(TEST_SCRIPT) failed$(COLOR_RESET)\n"; $(MAKE) clean; exit 1; }
+	@$(MAKE) clean
 
 # Run all tests in the tests directory
 run-all-tests: clean

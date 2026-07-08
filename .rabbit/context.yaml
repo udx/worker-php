@@ -6,7 +6,7 @@ generator:
   tool: dev.kit
   repo: https://github.com/udx/dev.kit
   version: 0.20.0
-  generated_at: 2026-07-08T15:27:24Z
+  generated_at: 2026-07-08T15:43:22Z
   sources:
     homepage: https://udx.dev/kit
     repository: https://github.com/udx/dev.kit
@@ -93,7 +93,9 @@ manifests:
     source_repo: udx/worker
     used_by:
       - README.md
+      - docs/worker-config.md
     evidence:
       - version: udx.io/worker-v1/config
       - github reference: udx/worker
       - path reference: README.md
+      - path reference: docs/worker-config.md
