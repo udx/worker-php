@@ -48,9 +48,9 @@ make run HOST_PORT=8080
 make log FOLLOW_LOGS=true
 ```
 
-`make run` uses defaults from `Makefile.variables`, including `./src/scripts:/var/www` and container port `80`.
+`make run` uses defaults from `Makefile.variables`, including `./src/scripts:/var/www`, `.env`, and container port `80`.
 
-This image does not define an application environment contract. Application-specific configuration belongs to the child app or target platform.
+This image does not require default environment variables. Runtime environment values and secret references belong in `worker.yaml` or the target platform.
 
 ## Runtime
 
@@ -103,6 +103,16 @@ Deployment uses the host-native tool for the target environment. Mount applicati
 The GitHub release pipeline is declared in `.github/workflows/docker-ops.yml` and delegates Docker publishing to `udx/reusable-workflows`.
 
 For dependency upgrades, include the changed base image/packages and the local verification result in the PR description.
+
+## Worker Config
+
+`worker.yaml` follows the base Worker config contract for runtime `config.env` values and `config.secrets` references. Deployment environment variables override values declared in `worker.yaml`.
+
+References:
+
+- https://github.com/udx/worker/blob/latest/docs/config.md
+- https://github.com/udx/worker/blob/latest/docs/secrets.md
+- https://github.com/udx/worker/blob/latest/docs/deployment.md
 
 ## Agent Context
 
