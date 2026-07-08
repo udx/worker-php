@@ -8,7 +8,7 @@
 
 PHP runtime image built on UDX Worker with NGINX and PHP-FPM wired for `/var/www`.
 
-[Quick Start](#quick-start) - [Runtime](#runtime) - [Development](#development) - [Deployment](#deployment) - [Agent Context](#agent-context)
+[Quick Start](#quick-start) - [Runtime](#runtime) - [Development](#development) - [Deployment](#deployment) - [Rabbit CI](#rabbit-ci)
 
 ## Overview
 
@@ -116,17 +116,11 @@ References:
 - https://github.com/udx/worker/blob/latest/docs/secrets.md
 - https://github.com/udx/worker/blob/latest/docs/deployment.md
 
-## Agent Context
+## Rabbit CI
 
-This repo exposes generated agent context in `.rabbit/context.yaml`. Treat it as evidence for agents and automation, not as a hand-authored contract.
+Rabbit-facing repo context lives in [`.rabbit/`](.rabbit/). This image repo publishes the `worker-php` Docker image; it does not own tenant-specific Rabbit lifecycle manifests.
 
-Do not edit `.rabbit/context.yaml` manually. After changing source docs, Dockerfile, workflows, or manifests, refresh it with:
-
-```bash
-dev.kit repo
-```
-
-Human-authored repo contracts remain in `README.md`, `Dockerfile`, `Makefile`, and `.github/workflows/`.
+See [`.rabbit/README.md`](.rabbit/README.md) for Rabbit CI entry points, delivery notes, and generated repo context handling.
 
 ## Resources
 

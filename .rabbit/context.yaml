@@ -6,7 +6,7 @@ generator:
   tool: dev.kit
   repo: https://github.com/udx/dev.kit
   version: 0.20.0
-  generated_at: 2026-07-08T15:43:22Z
+  generated_at: 2026-07-08T15:46:44Z
   sources:
     homepage: https://udx.dev/kit
     repository: https://github.com/udx/dev.kit
@@ -84,18 +84,22 @@ manifests:
   - path: .github/workflows/docker-ops.yml
     kind: githubWorkflow
     used_by:
+      - .rabbit/README.md
       - README.md
     evidence:
+      - path reference: .rabbit/README.md
       - path reference: README.md
   - path: worker.yaml
     kind: workerConfig
     declared_as: udx.io/worker-v1/config
     source_repo: udx/worker
     used_by:
+      - .rabbit/README.md
       - README.md
       - docs/worker-config.md
     evidence:
       - version: udx.io/worker-v1/config
       - github reference: udx/worker
+      - path reference: .rabbit/README.md
       - path reference: README.md
       - path reference: docs/worker-config.md
