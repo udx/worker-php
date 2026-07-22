@@ -19,7 +19,7 @@ ENV APP_HOME="/var/www"
 USER root
 
 # Install dependencies
-RUN apt-get update -o APT::Update::Error-Mode=any && apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     nginx="${NGINX_VERSION}" \
     php"${PHP_VERSION}"-fpm="${PHP_PACKAGE_VERSION}" \
     php"${PHP_VERSION}"-cli="${PHP_PACKAGE_VERSION}" \
