@@ -1,5 +1,5 @@
 # Use the UDX worker as the base image
-FROM usabilitydynamics/udx-worker:0.45.0
+FROM usabilitydynamics/udx-worker:0.47.0
 
 # Add metadata labels
 LABEL maintainer="UDX"
@@ -32,10 +32,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     rm -rf /tmp/* /var/tmp/* && \
     mkdir -p /etc/apt/sources.list.d && \
     chmod 755 /etc/apt/sources.list.d && \
-    mkdir -p /var/log/php /var/log/nginx /run/php /tmp /var/lib/nginx/body && \
+    mkdir -p /var/log/php /var/log/nginx /run/php /var/lib/nginx/body && \
     touch /var/log/php/fpm.log && \
-    chown -R "${USER}:${USER}" /var/log/php /var/log/nginx /run/php /tmp /var/lib/nginx $APP_HOME && \
-    chmod -R 755 /var/log/php /var/log/nginx /run/php /tmp /var/lib/nginx $APP_HOME
+    chown -R "${USER}:${USER}" /var/log/php /var/log/nginx /run/php /var/lib/nginx $APP_HOME && \
+    chmod 755 /var/log/php /var/log/nginx /run/php /var/lib/nginx /var/lib/nginx/body $APP_HOME
 
 # Copy NGINX and PHP configurations
 COPY etc/configs/nginx/nginx.conf /etc/nginx/nginx.conf
