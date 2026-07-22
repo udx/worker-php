@@ -35,7 +35,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     mkdir -p /var/log/php /var/log/nginx /run/php /var/lib/nginx/body && \
     touch /var/log/php/fpm.log && \
     chown -R "${USER}:${USER}" /var/log/php /var/log/nginx /run/php /var/lib/nginx $APP_HOME && \
-    chmod -R 755 /var/log/php /var/log/nginx /run/php /var/lib/nginx $APP_HOME
+    chmod 755 /var/log/php /var/log/nginx /run/php /var/lib/nginx /var/lib/nginx/body $APP_HOME
 
 # Copy NGINX and PHP configurations
 COPY etc/configs/nginx/nginx.conf /etc/nginx/nginx.conf
