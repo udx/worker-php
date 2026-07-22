@@ -19,7 +19,7 @@ ENV APP_HOME="/var/www"
 USER root
 
 # Install dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update -o APT::Update::Error-Mode=any && apt-get install -y --no-install-recommends \
     nginx="${NGINX_VERSION}" \
     php"${PHP_VERSION}"-fpm="${PHP_PACKAGE_VERSION}" \
     php"${PHP_VERSION}"-cli="${PHP_PACKAGE_VERSION}" \
@@ -32,10 +32,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     rm -rf /tmp/* /var/tmp/* && \
     mkdir -p /etc/apt/sources.list.d && \
     chmod 755 /etc/apt/sources.list.d && \
-    mkdir -p /var/log/php /var/log/nginx /run/php /tmp /var/lib/nginx/body && \
+    mkdir -p /var/log/php /var/log/nginx /run/php /var/lib/nginx/body && \
     touch /var/log/php/fpm.log && \
-    chown -R "${USER}:${USER}" /var/log/php /var/log/nginx /run/php /tmp /var/lib/nginx $APP_HOME && \
-    chmod -R 755 /var/log/php /var/log/nginx /run/php /tmp /var/lib/nginx $APP_HOME
+    chown -R "${USER}:${USER}" /var/log/php /var/log/nginx /run/php /var/lib/nginx $APP_HOME && \
+    chmod -R 755 /var/log/php /var/log/nginx /run/php /var/lib/nginx $APP_HOME
 
 # Copy NGINX and PHP configurations
 COPY etc/configs/nginx/nginx.conf /etc/nginx/nginx.conf
