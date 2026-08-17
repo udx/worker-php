@@ -28,11 +28,9 @@ Validate the manifest syntax before opening a PR:
 yq e '.' worker.yaml
 ```
 
-Refresh generated repo context after changing `worker.yaml` or this reference:
-
-```bash
-dev.kit repo
-```
+`worker.yaml` is an image-runtime contract. It is not part of the Rabbit CI
+repository resolution; regenerate `.rabbit/repo.yaml` only when the repository's
+GitHub delivery shape changes.
 
 ## Deployment Behavior
 
