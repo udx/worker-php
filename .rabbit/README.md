@@ -11,7 +11,7 @@ workflow triggers, and configured secret and variable names. It never includes
 secret or variable values.
 
 Regenerate the resolution after changing a GitHub workflow, branch protection,
-or GitHub Environment:
+Environment, or configured secret or variable name:
 
 ```bash
 rabbit.ci

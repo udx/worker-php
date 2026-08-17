@@ -120,7 +120,7 @@ References:
 
 Rabbit CI records this repository's GitHub delivery shape in [`.rabbit/repo.yaml`](.rabbit/repo.yaml). This image repo publishes the `worker-php` Docker image; it does not own tenant-specific Rabbit lifecycle manifests.
 
-Run `rabbit.ci` after changing a GitHub workflow, branch protection, or GitHub Environment, then review and commit the generated resolution with the source change. See [`.rabbit/README.md`](.rabbit/README.md) for the resolution boundary and delivery entry points.
+Run `rabbit.ci` after changing the repository's GitHub delivery configuration, including workflows, branch protection, Environments, or configured secret and variable names. Review and commit the generated resolution with the source change. See [`.rabbit/README.md`](.rabbit/README.md) for the resolution boundary and delivery entry points.
 
 ## Resources
 
