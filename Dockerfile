@@ -43,6 +43,8 @@ COPY etc/configs/nginx/default.conf /etc/nginx/sites-available/default
 COPY etc/configs/nginx/snippets/fastcgi-php.conf /etc/nginx/snippets/fastcgi-php"${PHP_VERSION}".conf
 COPY etc/configs/php/php-fpm.conf /etc/php/"${PHP_VERSION}"/fpm/php-fpm.conf
 COPY etc/configs/php/www.conf /etc/php/"${PHP_VERSION}"/fpm/pool.d/www.conf
+COPY etc/configs/php/conf.d/99-php2shell-mitigation.ini /etc/php/"${PHP_VERSION}"/fpm/conf.d/99-php2shell-mitigation.ini
+COPY etc/configs/php/conf.d/99-php2shell-mitigation.ini /etc/php/"${PHP_VERSION}"/cli/conf.d/99-php2shell-mitigation.ini
 
 # Update default.conf with PHP socket and configure PHP-FPM with custom settings
 RUN sed -i "s|\${PHP_VERSION}|${PHP_VERSION}|g" /etc/nginx/snippets/fastcgi-php"${PHP_VERSION}".conf && \
