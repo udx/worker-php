@@ -51,7 +51,8 @@ RUN sed -i "s|\${PHP_VERSION}|${PHP_VERSION}|g" /etc/nginx/snippets/fastcgi-php"
     sed -i "s|\${PHP_VERSION}|${PHP_VERSION}|g" /etc/nginx/sites-available/default && \
     sed -i "s|\${USER}|${USER}|g; s|\${PHP_VERSION}|${PHP_VERSION}|g" /etc/php/"${PHP_VERSION}"/fpm/pool.d/www.conf && \
     grep -q "^include=/etc/php/${PHP_VERSION}/fpm/pool.d/*.conf" /etc/php/"${PHP_VERSION}"/fpm/php-fpm.conf || \
-    echo "include=/etc/php/${PHP_VERSION}/fpm/pool.d/*.conf" >> /etc/php/"${PHP_VERSION}"/fpm/php-fpm.conf
+    echo "include=/etc/php/${PHP_VERSION}/fpm/pool.d/*.conf" >> /etc/php/"${PHP_VERSION}"/fpm/php-fpm.conf && \
+    ln -sf /etc/nginx/snippets/fastcgi-php"${PHP_VERSION}".conf /etc/nginx/snippets/fastcgi-php8.4.conf
 
 # Set PHP-FPM socket permissions in the configuration
 RUN sed -i "s|^error_log =.*|error_log = /dev/stderr|" /etc/php/"${PHP_VERSION}"/fpm/php-fpm.conf && \
