@@ -27,7 +27,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     php"${PHP_VERSION}"-curl="${PHP_PACKAGE_VERSION}" \
     php"${PHP_VERSION}"-xml="${PHP_PACKAGE_VERSION}" \
     php"${PHP_VERSION}"-zip="${PHP_PACKAGE_VERSION}" \
-    mysql-client=8.4.11-0ubuntu0.26.04.1 && \
+    mysql-client=8.4.13-0ubuntu0.26.04.2 && \
     apt-get clean && \
     rm -rf /tmp/* /var/tmp/* && \
     mkdir -p /etc/apt/sources.list.d && \
