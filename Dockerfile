@@ -6,8 +6,8 @@ LABEL maintainer="UDX"
 
 # Arguments and Environment Variables
 ARG PHP_VERSION=8.5
-ARG PHP_PACKAGE_VERSION=8.5.4-0ubuntu1.5
-ARG NGINX_VERSION=1.28.3-2ubuntu1.13
+ARG PHP_PACKAGE_VERSION=8.5.4-0ubuntu1.6
+ARG NGINX_VERSION=1.28.3-2ubuntu1.14
 
 # Set the PHP_VERSION and PHP_PACKAGE_VERSION as environment variables
 ENV PHP_VERSION="${PHP_VERSION}"
